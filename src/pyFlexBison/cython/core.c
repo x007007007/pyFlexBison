@@ -602,8 +602,8 @@ static CYTHON_INLINE float __PYX_NAN() {
   #endif
 #endif
 
-#define __PYX_HAVE__pyLALR1__core_
-#define __PYX_HAVE_API__pyLALR1__core_
+#define __PYX_HAVE__pyFlexBison__core_
+#define __PYX_HAVE_API__pyFlexBison__core_
 /* Early includes */
 #include "stdio.h"
 #include "string.h"
@@ -816,20 +816,20 @@ static const char *__pyx_filename;
 
 static const char *__pyx_f[] = {
   "stringsource",
-  "src/pyLALR1/cython/core.pyx",
+  "src/pyFlexBison/cython/core.pyx",
 };
 
 /*--- Type declarations ---*/
-struct __pyx_obj_7pyLALR1_5core__RunnerEngine;
+struct __pyx_obj_11pyFlexBison_5core__RunnerEngine;
 
-/* "src/pyLALR1/cython/core.pyx":29
+/* "src/pyFlexBison/cython/core.pyx":29
  * 
  * 
  * cdef class RunnerEngine:             # <<<<<<<<<<<<<<
  *     cdef object parser
  *     cdef object parserHash # hash of current python parser object
  */
-struct __pyx_obj_7pyLALR1_5core__RunnerEngine {
+struct __pyx_obj_11pyFlexBison_5core__RunnerEngine {
   PyObject_HEAD
   PyObject *parser;
   PyObject *parserHash;
@@ -1080,13 +1080,13 @@ static int __Pyx_check_binary_version(void);
 static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
 
-/* Module declarations from 'pyLALR1.core_' */
-static PyTypeObject *__pyx_ptype_7pyLALR1_5core__RunnerEngine = 0;
-#define __Pyx_MODULE_NAME "pyLALR1.core_"
-extern int __pyx_module_is_main_pyLALR1__core_;
-int __pyx_module_is_main_pyLALR1__core_ = 0;
+/* Module declarations from 'pyFlexBison.core_' */
+static PyTypeObject *__pyx_ptype_11pyFlexBison_5core__RunnerEngine = 0;
+#define __Pyx_MODULE_NAME "pyFlexBison.core_"
+extern int __pyx_module_is_main_pyFlexBison__core_;
+int __pyx_module_is_main_pyFlexBison__core_ = 0;
 
-/* Implementation of 'pyLALR1.core_' */
+/* Implementation of 'pyFlexBison.core_' */
 static PyObject *__pyx_builtin_TypeError;
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
@@ -1116,29 +1116,25 @@ static PyObject *__pyx_kp_s_self_libHandle_cannot_be_convert;
 static PyObject *__pyx_n_s_setstate;
 static PyObject *__pyx_n_s_setstate_cython;
 static PyObject *__pyx_n_s_test;
-static int __pyx_pf_7pyLALR1_5core__12RunnerEngine___init__(struct __pyx_obj_7pyLALR1_5core__RunnerEngine *__pyx_v_self, PyObject *__pyx_v_parser); /* proto */
-static PyObject *__pyx_pf_7pyLALR1_5core__12RunnerEngine_2__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7pyLALR1_5core__RunnerEngine *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7pyLALR1_5core__12RunnerEngine_4__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7pyLALR1_5core__RunnerEngine *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
-static PyObject *__pyx_tp_new_7pyLALR1_5core__RunnerEngine(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static int __pyx_pf_11pyFlexBison_5core__12RunnerEngine___init__(struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *__pyx_v_self, PyObject *__pyx_v_parser); /* proto */
+static PyObject *__pyx_pf_11pyFlexBison_5core__12RunnerEngine_2__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_11pyFlexBison_5core__12RunnerEngine_4__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
+static PyObject *__pyx_tp_new_11pyFlexBison_5core__RunnerEngine(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tuple_;
 static PyObject *__pyx_tuple__2;
 /* Late includes */
 
-/* "src/pyLALR1/cython/core.pyx":39
+/* "src/pyFlexBison/cython/core.pyx":39
  *     cdef char *libHash
  * 
  *     def __init__(self, parser):             # <<<<<<<<<<<<<<
- *         """
- *         Creates a ParserEngine wrapper, and builds/loads the library.
+ *         self.parser = parser
+ *         printf("hello world \n")
  */
 
 /* Python wrapper */
-static int __pyx_pw_7pyLALR1_5core__12RunnerEngine_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7pyLALR1_5core__12RunnerEngine___init__[] = "\n        Creates a ParserEngine wrapper, and builds/loads the library.\n\n        Arguments:\n            - parser - an instance of a subclass of Parser\n\n        In the course of initialisation, we check the library against the\n        parser object's rules. If the lib doesn't exist, or can't be loaded, or\n        doesn't match, we build a new library.\n\n        Either way, we end up with a binary parser engine which matches the\n        current rules in the parser object.\n        ";
-#if CYTHON_COMPILING_IN_CPYTHON
-struct wrapperbase __pyx_wrapperbase_7pyLALR1_5core__12RunnerEngine___init__;
-#endif
-static int __pyx_pw_7pyLALR1_5core__12RunnerEngine_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static int __pyx_pw_11pyFlexBison_5core__12RunnerEngine_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static int __pyx_pw_11pyFlexBison_5core__12RunnerEngine_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_parser = 0;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
@@ -1178,28 +1174,28 @@ static int __pyx_pw_7pyLALR1_5core__12RunnerEngine_1__init__(PyObject *__pyx_v_s
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("__init__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 39, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("pyLALR1.core_.RunnerEngine.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("pyFlexBison.core_.RunnerEngine.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7pyLALR1_5core__12RunnerEngine___init__(((struct __pyx_obj_7pyLALR1_5core__RunnerEngine *)__pyx_v_self), __pyx_v_parser);
+  __pyx_r = __pyx_pf_11pyFlexBison_5core__12RunnerEngine___init__(((struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *)__pyx_v_self), __pyx_v_parser);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static int __pyx_pf_7pyLALR1_5core__12RunnerEngine___init__(struct __pyx_obj_7pyLALR1_5core__RunnerEngine *__pyx_v_self, PyObject *__pyx_v_parser) {
+static int __pyx_pf_11pyFlexBison_5core__12RunnerEngine___init__(struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *__pyx_v_self, PyObject *__pyx_v_parser) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "src/pyLALR1/cython/core.pyx":53
- *         current rules in the parser object.
- *         """
- *         self.parser = parser             # <<<<<<<<<<<<<<
+  /* "src/pyFlexBison/cython/core.pyx":40
  * 
+ *     def __init__(self, parser):
+ *         self.parser = parser             # <<<<<<<<<<<<<<
  *         printf("hello world \n")
+ * 
  */
   __Pyx_INCREF(__pyx_v_parser);
   __Pyx_GIVEREF(__pyx_v_parser);
@@ -1207,20 +1203,20 @@ static int __pyx_pf_7pyLALR1_5core__12RunnerEngine___init__(struct __pyx_obj_7py
   __Pyx_DECREF(__pyx_v_self->parser);
   __pyx_v_self->parser = __pyx_v_parser;
 
-  /* "src/pyLALR1/cython/core.pyx":55
+  /* "src/pyFlexBison/cython/core.pyx":41
+ *     def __init__(self, parser):
  *         self.parser = parser
- * 
  *         printf("hello world \n")             # <<<<<<<<<<<<<<
  * 
  */
   (void)(printf(((char *)"hello world \n")));
 
-  /* "src/pyLALR1/cython/core.pyx":39
+  /* "src/pyFlexBison/cython/core.pyx":39
  *     cdef char *libHash
  * 
  *     def __init__(self, parser):             # <<<<<<<<<<<<<<
- *         """
- *         Creates a ParserEngine wrapper, and builds/loads the library.
+ *         self.parser = parser
+ *         printf("hello world \n")
  */
 
   /* function exit code */
@@ -1236,19 +1232,19 @@ static int __pyx_pf_7pyLALR1_5core__12RunnerEngine___init__(struct __pyx_obj_7py
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7pyLALR1_5core__12RunnerEngine_3__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_7pyLALR1_5core__12RunnerEngine_3__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_11pyFlexBison_5core__12RunnerEngine_3__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_11pyFlexBison_5core__12RunnerEngine_3__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__reduce_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_7pyLALR1_5core__12RunnerEngine_2__reduce_cython__(((struct __pyx_obj_7pyLALR1_5core__RunnerEngine *)__pyx_v_self));
+  __pyx_r = __pyx_pf_11pyFlexBison_5core__12RunnerEngine_2__reduce_cython__(((struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7pyLALR1_5core__12RunnerEngine_2__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7pyLALR1_5core__RunnerEngine *__pyx_v_self) {
+static PyObject *__pyx_pf_11pyFlexBison_5core__12RunnerEngine_2__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -1278,7 +1274,7 @@ static PyObject *__pyx_pf_7pyLALR1_5core__12RunnerEngine_2__reduce_cython__(CYTH
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("pyLALR1.core_.RunnerEngine.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("pyFlexBison.core_.RunnerEngine.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
@@ -1293,19 +1289,19 @@ static PyObject *__pyx_pf_7pyLALR1_5core__12RunnerEngine_2__reduce_cython__(CYTH
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7pyLALR1_5core__12RunnerEngine_5__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
-static PyObject *__pyx_pw_7pyLALR1_5core__12RunnerEngine_5__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pw_11pyFlexBison_5core__12RunnerEngine_5__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
+static PyObject *__pyx_pw_11pyFlexBison_5core__12RunnerEngine_5__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__setstate_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_7pyLALR1_5core__12RunnerEngine_4__setstate_cython__(((struct __pyx_obj_7pyLALR1_5core__RunnerEngine *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
+  __pyx_r = __pyx_pf_11pyFlexBison_5core__12RunnerEngine_4__setstate_cython__(((struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7pyLALR1_5core__12RunnerEngine_4__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7pyLALR1_5core__RunnerEngine *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pf_11pyFlexBison_5core__12RunnerEngine_4__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -1335,15 +1331,15 @@ static PyObject *__pyx_pf_7pyLALR1_5core__12RunnerEngine_4__setstate_cython__(CY
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("pyLALR1.core_.RunnerEngine.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("pyFlexBison.core_.RunnerEngine.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_tp_new_7pyLALR1_5core__RunnerEngine(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
-  struct __pyx_obj_7pyLALR1_5core__RunnerEngine *p;
+static PyObject *__pyx_tp_new_11pyFlexBison_5core__RunnerEngine(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+  struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *p;
   PyObject *o;
   if (likely((t->tp_flags & Py_TPFLAGS_IS_ABSTRACT) == 0)) {
     o = (*t->tp_alloc)(t, 0);
@@ -1351,15 +1347,15 @@ static PyObject *__pyx_tp_new_7pyLALR1_5core__RunnerEngine(PyTypeObject *t, CYTH
     o = (PyObject *) PyBaseObject_Type.tp_new(t, __pyx_empty_tuple, 0);
   }
   if (unlikely(!o)) return 0;
-  p = ((struct __pyx_obj_7pyLALR1_5core__RunnerEngine *)o);
+  p = ((struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *)o);
   p->parser = Py_None; Py_INCREF(Py_None);
   p->parserHash = Py_None; Py_INCREF(Py_None);
   p->libFilename_py = Py_None; Py_INCREF(Py_None);
   return o;
 }
 
-static void __pyx_tp_dealloc_7pyLALR1_5core__RunnerEngine(PyObject *o) {
-  struct __pyx_obj_7pyLALR1_5core__RunnerEngine *p = (struct __pyx_obj_7pyLALR1_5core__RunnerEngine *)o;
+static void __pyx_tp_dealloc_11pyFlexBison_5core__RunnerEngine(PyObject *o) {
+  struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *p = (struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *)o;
   #if CYTHON_USE_TP_FINALIZE
   if (unlikely(PyType_HasFeature(Py_TYPE(o), Py_TPFLAGS_HAVE_FINALIZE) && Py_TYPE(o)->tp_finalize) && !_PyGC_FINALIZED(o)) {
     if (PyObject_CallFinalizerFromDealloc(o)) return;
@@ -1372,9 +1368,9 @@ static void __pyx_tp_dealloc_7pyLALR1_5core__RunnerEngine(PyObject *o) {
   (*Py_TYPE(o)->tp_free)(o);
 }
 
-static int __pyx_tp_traverse_7pyLALR1_5core__RunnerEngine(PyObject *o, visitproc v, void *a) {
+static int __pyx_tp_traverse_11pyFlexBison_5core__RunnerEngine(PyObject *o, visitproc v, void *a) {
   int e;
-  struct __pyx_obj_7pyLALR1_5core__RunnerEngine *p = (struct __pyx_obj_7pyLALR1_5core__RunnerEngine *)o;
+  struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *p = (struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *)o;
   if (p->parser) {
     e = (*v)(p->parser, a); if (e) return e;
   }
@@ -1387,9 +1383,9 @@ static int __pyx_tp_traverse_7pyLALR1_5core__RunnerEngine(PyObject *o, visitproc
   return 0;
 }
 
-static int __pyx_tp_clear_7pyLALR1_5core__RunnerEngine(PyObject *o) {
+static int __pyx_tp_clear_11pyFlexBison_5core__RunnerEngine(PyObject *o) {
   PyObject* tmp;
-  struct __pyx_obj_7pyLALR1_5core__RunnerEngine *p = (struct __pyx_obj_7pyLALR1_5core__RunnerEngine *)o;
+  struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *p = (struct __pyx_obj_11pyFlexBison_5core__RunnerEngine *)o;
   tmp = ((PyObject*)p->parser);
   p->parser = Py_None; Py_INCREF(Py_None);
   Py_XDECREF(tmp);
@@ -1402,18 +1398,18 @@ static int __pyx_tp_clear_7pyLALR1_5core__RunnerEngine(PyObject *o) {
   return 0;
 }
 
-static PyMethodDef __pyx_methods_7pyLALR1_5core__RunnerEngine[] = {
-  {"__reduce_cython__", (PyCFunction)__pyx_pw_7pyLALR1_5core__12RunnerEngine_3__reduce_cython__, METH_NOARGS, 0},
-  {"__setstate_cython__", (PyCFunction)__pyx_pw_7pyLALR1_5core__12RunnerEngine_5__setstate_cython__, METH_O, 0},
+static PyMethodDef __pyx_methods_11pyFlexBison_5core__RunnerEngine[] = {
+  {"__reduce_cython__", (PyCFunction)__pyx_pw_11pyFlexBison_5core__12RunnerEngine_3__reduce_cython__, METH_NOARGS, 0},
+  {"__setstate_cython__", (PyCFunction)__pyx_pw_11pyFlexBison_5core__12RunnerEngine_5__setstate_cython__, METH_O, 0},
   {0, 0, 0, 0}
 };
 
-static PyTypeObject __pyx_type_7pyLALR1_5core__RunnerEngine = {
+static PyTypeObject __pyx_type_11pyFlexBison_5core__RunnerEngine = {
   PyVarObject_HEAD_INIT(0, 0)
-  "pyLALR1.core_.RunnerEngine", /*tp_name*/
-  sizeof(struct __pyx_obj_7pyLALR1_5core__RunnerEngine), /*tp_basicsize*/
+  "pyFlexBison.core_.RunnerEngine", /*tp_name*/
+  sizeof(struct __pyx_obj_11pyFlexBison_5core__RunnerEngine), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_7pyLALR1_5core__RunnerEngine, /*tp_dealloc*/
+  __pyx_tp_dealloc_11pyFlexBison_5core__RunnerEngine, /*tp_dealloc*/
   #if PY_VERSION_HEX < 0x030800b4
   0, /*tp_print*/
   #endif
@@ -1440,13 +1436,13 @@ static PyTypeObject __pyx_type_7pyLALR1_5core__RunnerEngine = {
   0, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
   0, /*tp_doc*/
-  __pyx_tp_traverse_7pyLALR1_5core__RunnerEngine, /*tp_traverse*/
-  __pyx_tp_clear_7pyLALR1_5core__RunnerEngine, /*tp_clear*/
+  __pyx_tp_traverse_11pyFlexBison_5core__RunnerEngine, /*tp_traverse*/
+  __pyx_tp_clear_11pyFlexBison_5core__RunnerEngine, /*tp_clear*/
   0, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
   0, /*tp_iter*/
   0, /*tp_iternext*/
-  __pyx_methods_7pyLALR1_5core__RunnerEngine, /*tp_methods*/
+  __pyx_methods_11pyFlexBison_5core__RunnerEngine, /*tp_methods*/
   0, /*tp_members*/
   0, /*tp_getset*/
   0, /*tp_base*/
@@ -1454,9 +1450,9 @@ static PyTypeObject __pyx_type_7pyLALR1_5core__RunnerEngine = {
   0, /*tp_descr_get*/
   0, /*tp_descr_set*/
   0, /*tp_dictoffset*/
-  __pyx_pw_7pyLALR1_5core__12RunnerEngine_1__init__, /*tp_init*/
+  __pyx_pw_11pyFlexBison_5core__12RunnerEngine_1__init__, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_7pyLALR1_5core__RunnerEngine, /*tp_new*/
+  __pyx_tp_new_11pyFlexBison_5core__RunnerEngine, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -1621,26 +1617,16 @@ static int __Pyx_modinit_type_init_code(void) {
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_init_code", 0);
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_7pyLALR1_5core__RunnerEngine) < 0) __PYX_ERR(1, 29, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_11pyFlexBison_5core__RunnerEngine) < 0) __PYX_ERR(1, 29, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
-  __pyx_type_7pyLALR1_5core__RunnerEngine.tp_print = 0;
+  __pyx_type_11pyFlexBison_5core__RunnerEngine.tp_print = 0;
   #endif
-  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_7pyLALR1_5core__RunnerEngine.tp_dictoffset && __pyx_type_7pyLALR1_5core__RunnerEngine.tp_getattro == PyObject_GenericGetAttr)) {
-    __pyx_type_7pyLALR1_5core__RunnerEngine.tp_getattro = __Pyx_PyObject_GenericGetAttr;
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_11pyFlexBison_5core__RunnerEngine.tp_dictoffset && __pyx_type_11pyFlexBison_5core__RunnerEngine.tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_type_11pyFlexBison_5core__RunnerEngine.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  #if CYTHON_COMPILING_IN_CPYTHON
-  {
-    PyObject *wrapper = PyObject_GetAttrString((PyObject *)&__pyx_type_7pyLALR1_5core__RunnerEngine, "__init__"); if (unlikely(!wrapper)) __PYX_ERR(1, 29, __pyx_L1_error)
-    if (Py_TYPE(wrapper) == &PyWrapperDescr_Type) {
-      __pyx_wrapperbase_7pyLALR1_5core__12RunnerEngine___init__ = *((PyWrapperDescrObject *)wrapper)->d_base;
-      __pyx_wrapperbase_7pyLALR1_5core__12RunnerEngine___init__.doc = __pyx_doc_7pyLALR1_5core__12RunnerEngine___init__;
-      ((PyWrapperDescrObject *)wrapper)->d_base = &__pyx_wrapperbase_7pyLALR1_5core__12RunnerEngine___init__;
-    }
-  }
-  #endif
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_RunnerEngine, (PyObject *)&__pyx_type_7pyLALR1_5core__RunnerEngine) < 0) __PYX_ERR(1, 29, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7pyLALR1_5core__RunnerEngine) < 0) __PYX_ERR(1, 29, __pyx_L1_error)
-  __pyx_ptype_7pyLALR1_5core__RunnerEngine = &__pyx_type_7pyLALR1_5core__RunnerEngine;
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_RunnerEngine, (PyObject *)&__pyx_type_11pyFlexBison_5core__RunnerEngine) < 0) __PYX_ERR(1, 29, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_11pyFlexBison_5core__RunnerEngine) < 0) __PYX_ERR(1, 29, __pyx_L1_error)
+  __pyx_ptype_11pyFlexBison_5core__RunnerEngine = &__pyx_type_11pyFlexBison_5core__RunnerEngine;
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -1846,14 +1832,14 @@ if (!__Pyx_RefNanny) {
   #if PY_MAJOR_VERSION < 3 && (__PYX_DEFAULT_STRING_ENCODING_IS_ASCII || __PYX_DEFAULT_STRING_ENCODING_IS_DEFAULT)
   if (__Pyx_init_sys_getdefaultencoding_params() < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   #endif
-  if (__pyx_module_is_main_pyLALR1__core_) {
+  if (__pyx_module_is_main_pyFlexBison__core_) {
     if (PyObject_SetAttr(__pyx_m, __pyx_n_s_name, __pyx_n_s_main) < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   }
   #if PY_MAJOR_VERSION >= 3
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(1, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "pyLALR1.core_")) {
-      if (unlikely(PyDict_SetItemString(modules, "pyLALR1.core_", __pyx_m) < 0)) __PYX_ERR(1, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "pyFlexBison.core_")) {
+      if (unlikely(PyDict_SetItemString(modules, "pyFlexBison.core_", __pyx_m) < 0)) __PYX_ERR(1, 1, __pyx_L1_error)
     }
   }
   #endif
@@ -1874,7 +1860,7 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_patch_abc() < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   #endif
 
-  /* "src/pyLALR1/cython/core.pyx":1
+  /* "src/pyFlexBison/cython/core.pyx":1
  * cdef extern from "Python.h":             # <<<<<<<<<<<<<<
  *     object PyBytes_FromString(char *)
  *     object PyUnicode_FromString(char *)
@@ -1891,11 +1877,11 @@ if (!__Pyx_RefNanny) {
   __Pyx_XDECREF(__pyx_t_1);
   if (__pyx_m) {
     if (__pyx_d) {
-      __Pyx_AddTraceback("init pyLALR1.core_", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init pyFlexBison.core_", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     Py_CLEAR(__pyx_m);
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init pyLALR1.core_");
+    PyErr_SetString(PyExc_ImportError, "init pyFlexBison.core_");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
