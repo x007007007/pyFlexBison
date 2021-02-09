@@ -26,22 +26,6 @@ class TokenRule():
         self.token_process = method
 
 
-def multiline_trim(context, start) -> str:
-    lines = context.split("\n")
-    assert lines[0].strip() == ""
-    blank_str = " " * start
-    for i in range(len(lines)):
-        line = lines[i]
-        if len(line) >= start:
-            if line[:start] == blank_str:
-                lines[i] = line[8:]
-            else:
-                raise SyntaxError(f"error on line {i} {context}")
-        else:
-            lines[i] = ""
-    return "\n".join(lines)
-
-
 class FlexGenerator(GeneratorBase):
     MAC_BREW_PATH = '/usr/local/opt/flex/bin/flex'
     bin_path: str = None
@@ -98,7 +82,7 @@ class FlexGenerator(GeneratorBase):
             pass
 
     def generate(self) -> str:
-        template = Template(multiline_trim("""
+        template = Template(self.trim_rules_string("""
         %{
             #include "$header_name"
         %}
@@ -106,7 +90,7 @@ class FlexGenerator(GeneratorBase):
         %%
         $rules
         %%
-        """, 8))
+        """))
         return template.substitute(
             rules=self.generate_rule(),
             header_name=self.bison_header
