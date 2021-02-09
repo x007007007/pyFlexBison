@@ -1,0 +1,5 @@
+
+
+class GeneratorBase(object):
+
+    pass
