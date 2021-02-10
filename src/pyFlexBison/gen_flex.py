@@ -67,9 +67,7 @@ class FlexGenerator(
 
     def __init__(self, bison_header: str=None, *args, **kwargs):
         super(FlexGenerator, self).__init__(*args, **kwargs)
-        if bison_header is None:
-            self.bison_header = "bison.h"
-
+        self.bison_header = "bison.h" if bison_header is None else bison_header
         self.tokens = []
         if self.token_rule is not None:
             self._analysis_rule()
@@ -88,14 +86,16 @@ class FlexGenerator(
         return "\n".join((str(i) for i in self.tokens))
 
     def generate(self) -> str:
-        template = Template(self.trim_rules_string("""
+        template = Template(self.trim_rules_string(r"""
         %{
             #include "$header_name"
         %}
+        
         %option noyywrap
         
         %%
         $rules
+        .       { printf("Mystery charactor %c\n", *yytext); } 
         %%
         """))
         return template.substitute(

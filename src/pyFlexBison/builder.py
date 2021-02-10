@@ -1,6 +1,7 @@
 from .gen_bison import BisonGenerator
 from .gen_flex import FlexGenerator
 from .generator import CommandGeneratorBase
+import typing
 import os
 import re
 import sys
@@ -9,6 +10,8 @@ import warnings
 
 class Builder(CommandGeneratorBase):
     MAC_GCC_PATH = "/usr/bin/gcc"
+    bin_path: str = None
+    gcc_version: typing.Tuple[int, int, int]
 
     def __init__(
         self,
@@ -34,26 +37,30 @@ class Builder(CommandGeneratorBase):
                 match_res = re.match(r'version.*?\s*(\d+)\.(\d+)\.(\d+)', res)
                 if match_res:
                     main, major, minor = (int(i) for i in match_res.groups())
-                    self.flex_version = (main, major, minor)
+                    self.gcc_version = (main, major, minor)
                     if main < 11 or (main == 11 and major < 0 ):
                         warnings.warn(f"bison version to low: {res}", RuntimeWarning)
                     else:
                         self.bin_path = self.MAC_GCC_PATH
+                else:
+                    self.bin_path = self.MAC_GCC_PATH
             else:
                 raise RuntimeError("bison don't exist")
         elif sys.platform.startswith("linux"):
             pass
 
     def build(self):
+        if self.bin_path is None:
+            raise RuntimeError("run env_checker first")
         output = os.path.join(self.temp_dir, f"{self.name}.o")
-        proc = self.run_cmd([
+        cmds = [
             self.bin_path,
             self.flex.output_c,
             self.bison.output_c,
             self.bison.output_h,
-            '-o',
-            output
-        ])
+        ]
+        print(cmds)
+        proc = self.run_cmd(cmds, env=self.flex.run_env)
         out, err = proc.communicate()
         print(f"error code: {proc.returncode} \n"
               f" {out.decode(sys.getdefaultencoding())}"

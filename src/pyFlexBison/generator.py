@@ -17,7 +17,7 @@ class GeneratorBase(object):
                 if rules[i][:e].strip() == '':
                     rules[i] = rules[i][e:]
                 else:
-                    warnings.warn('ident not match on {i}', SyntaxWarning)
+                    warnings.warn(f'ident not match on {i}: {rules}', SyntaxWarning)
         return "\n".join(rules)
 
     def build_command(self, path):

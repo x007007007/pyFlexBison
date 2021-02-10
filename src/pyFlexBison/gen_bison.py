@@ -53,7 +53,7 @@ class GrammarRegister:
         res = self.rule_string  # type: str
         tpl = Template('{ $$$$ = bison_callback("$name"); }')
         for k, v in self.callback_replace.items():
-            res = res.replace(k, tpl.substitute(name=v))
+            res = res.replace(k, tpl.substitute(name=v.__name__))
         return res
 
 
@@ -71,6 +71,8 @@ class BisonEvnCheckerMixin:
     bin_path: str = None
     bison_version: typing.Tuple[int, int, int] = None
     bison_bin: str = None
+    output_c: str
+    output_h: str
 
     def env_checker(self):
         if self.run_env is None:
@@ -129,7 +131,10 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
         template = Template(self.trim_rules_string(r"""
         %{
             #include <stdio.h>
+            int yylex();
+            void yyerror(char *s);
         %}
+
         %token $tokens
 
         %%
@@ -141,7 +146,6 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
             return 0;
         }
         
-        //定义解析出错时的处理
         void yyerror(char *s) {
             fprintf(stderr, "error: %s\n", s);
         }
