@@ -1,5 +1,5 @@
 from pyFlexBison.gen_bison import BisonGenerator, grammar
-
+from unittest import mock
 
 def test_flex_generator_inherit_token():
     class CalcBisonGenerator(BisonGenerator):
@@ -14,7 +14,7 @@ def test_flex_generator_inherit_token():
         @grammar("""
             exp: term {##} //表达式:=项
                 | exp ADD term {#exp_add#} //或者，表达式::=表达式+项
-                | exp SUB term {#sub_func#} //或者，表达式::=表达式-项
+                | exp SUB term {#exp_sub#} //或者，表达式::=表达式-项
                 ;
         """)
         def exp_add_sub(self):
@@ -24,7 +24,7 @@ def test_flex_generator_inherit_token():
         def exp_add(self):
             pass
 
-        @exp_add_sub.register('sub_func')
+        @exp_add_sub.register()
         def exp_sub(self):
             pass
 
@@ -58,5 +58,36 @@ def test_flex_generator_inherit_token():
     calc_bison = CalcBisonGenerator()
     yacc = calc_bison.load_rules()
     assert isinstance(yacc, list)
-    print(yacc)
-    assert False, yacc
+    assert calc_bison.tokens == set(['MUL', 'DIV', 'EOL', 'NUMBER', 'SUB', 'ADD', 'ABS'])
+
+
+def test_flex_generator_generate():
+    class CalcBisonGenerator(BisonGenerator):
+        @grammar("""
+            calclist:
+                | calclist exp EOL {##} 
+                ;
+        """)
+        def calclist(self, *args, **kwargs):
+            print(args[1])
+
+        @grammar("""
+            exp: term {##} //表达式:=项
+                | exp ADD term {#exp_add#} //或者，表达式::=表达式+项
+                | exp SUB term {#exp_sub#} //或者，表达式::=表达式-项
+                ;
+        """)
+        def exp_add_sub(self):
+            pass
+
+        @exp_add_sub.register()
+        def exp_add(self):
+            pass
+
+        @exp_add_sub.register()
+        def exp_sub(self):
+            pass
+
+    calc = CalcBisonGenerator()
+    res = calc.generate()
+    assert isinstance(res, str)
