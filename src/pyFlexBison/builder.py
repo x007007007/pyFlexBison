@@ -2,16 +2,23 @@ from .gen_bison import BisonGenerator
 from .gen_flex import FlexGenerator
 from .generator import CommandGeneratorBase
 import typing
-import os
 import re
 import sys
 import warnings
+from distutils import ccompiler
+import os
+from distutils.core import Extension
+from distutils.command import build_ext
+from distutils import sysconfig
 
 
 class Builder(CommandGeneratorBase):
     MAC_GCC_PATH = "/usr/bin/gcc"
     bin_path: str = None
     gcc_version: typing.Tuple[int, int, int]
+
+    include_dirs = None
+    libraries = None
 
     def __init__(
         self,
@@ -25,6 +32,9 @@ class Builder(CommandGeneratorBase):
         self.name = name
         self.flex = flex_generator
         self.bison = bison_generator
+        self.include_dirs = ['./build/']
+        self.libraries = []
+
 
     def env_checker(self):
         if self.run_env is None:
@@ -52,17 +62,23 @@ class Builder(CommandGeneratorBase):
     def build(self):
         if self.bin_path is None:
             raise RuntimeError("run env_checker first")
+        py_include = sysconfig.get_python_inc()
+        plat_py_include = sysconfig.get_python_inc(plat_specific=1)
+        self.include_dirs.extend(py_include.split(os.path.pathsep))
+        if plat_py_include != py_include:
+            self.include_dirs.extend(
+                plat_py_include.split(os.path.pathsep))
+
         output = os.path.join(self.temp_dir, f"{self.name}.o")
         cmds = [
             self.bin_path,
             self.flex.output_c,
             self.bison.output_c,
             self.bison.output_h,
+            *[f"-I{i}" for i in self.include_dirs]
         ]
-        print(cmds)
         proc = self.run_cmd(cmds, env=self.flex.run_env)
         out, err = proc.communicate()
         print(f"error code: {proc.returncode} \n"
               f" {out.decode(sys.getdefaultencoding())}"
               f" {err.decode(sys.getdefaultencoding())}")
-

@@ -101,12 +101,28 @@ class BisonEvnCheckerMixin:
 class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorBase):
     tokens: set = None
 
-    def __init__(self, *args, **kwargs):
+    TYPE_T_LALR = "lalr"
+    TYPE_T_IELR = "ielr"
+    TYPE_T_CANONICAL_LR = "canonical-lr"
+    TYPE_LR_MOST = 'most'
+    TYPE_LR_CONSISTENT = 'consistent'
+    TYPE_LR_ACPT = 'accepting'
+
+    def __init__(
+            self,
+            table_type=None,
+            lr_default_reduction=None,
+            *args,
+            **kwargs
+    ):
+        self.table_type = self.TYPE_T_LALR if table_type is None else table_type
+        assert self.table_type in (self.TYPE_T_LALR, self.TYPE_T_IELR, self.TYPE_T_CANONICAL_LR)
+        assert lr_default_reduction in (self.TYPE_LR_ACPT, self.TYPE_LR_CONSISTENT, self.TYPE_LR_MOST, None)
+        self.lr_default_reduction = lr_default_reduction
         super(BisonGenerator, self).__init__(*args, **kwargs)
         self.rules = []
         self.__load_rules()
         self.__analysis_rules()
-
 
     def __load_rules(self):
         self.rules = []
@@ -127,16 +143,66 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
         rules_str = "\n".join(i.generate() for i in self.rules)
         return rules_str
 
+    def generate_optional(self):
+        optionals = []
+        if self.table_type:
+            optionals.append(f"%define lr.type {self.table_type}")
+        if self.lr_default_reduction:
+            optionals.append(f"%define lr.default-reduction {self.lr_default_reduction}")
+
+        return "\n".join(optionals)
+
     def generate(self) -> str:
         template = Template(self.trim_rules_string(r"""
+        
+        %code top {
+            /* The unqualified %code or %code requires should usually 
+            be more appropriate than %code top. However, occasionally 
+            it is necessary to insert code much nearer the top 
+            of the parser implementation file. */
+            // #define _GNU_SOURCE
+            // #include <stdio.h>
+            #define PY_SSIZE_T_CLEAN
+            #include "Python.h"
+            #define YYSTYPE PyObject *
+        }
+        
+        %code requires {
+            /* 
+            This is the best place to write dependency code required for 
+            YYSTYPE and YYLTYPE. In other words, it’s the best place to 
+            define types referenced in %union directives. If you use
+             #define to override Bison’s default YYSTYPE and YYLTYPE
+              definitions, then it is also the best place. However you 
+              should rather %define api.value.type and api.location.type. 
+            */
+        }
+        
+        %code provides {
+            /* urpose: This is the best place to write additional definitions 
+            and declarations that should be provided to other modules. 
+            The parser header file and the parser implementation file after 
+            the Bison-generated YYSTYPE, YYLTYPE, and token definitions. */
+        }
+        
         %{
-            #include <stdio.h>
             int yylex();
             void yyerror(char *s);
+            
+            YYSTYPE bison_callback(char *name, ...) {
+                printf("bison_callback %s", name);
+            }
+            
+            callback_token_process(char *name, ...) {
+                printf("callback_token_process %s", name);
+            }
         %}
 
+        
         %token $tokens
-
+        
+        $optional
+        
         %%
         $rules
         %%
@@ -153,6 +219,7 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
         return template.substitute(
             tokens=" ".join(self.tokens),
             rules=self.generate_rule(),
+            optional=self.generate_optional()
         )
 
     def get_bison_path(self):
