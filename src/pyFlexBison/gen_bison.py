@@ -15,7 +15,10 @@ class GrammarRegister:
         self.sub_func_map = {}
 
     def __repr__(self):
-        return f"\n{self.rule_string}"
+        rule_headers = self.rule_string.strip().split('\n', maxsplit=1)
+        if len(rule_headers) > 0:
+            summary = rule_headers[0]
+        return f"<BNF:{summary} ...>"
 
     def __call__(self, name=None):
         def decorate(func):
@@ -48,7 +51,7 @@ class GrammarRegister:
 
     def generate(self):
         res = self.rule_string  # type: str
-        tpl = Template('{ $$$$ = bison_callback("$name", ); }')
+        tpl = Template('{ $$$$ = bison_callback("$name"); }')
         for k, v in self.callback_replace.items():
             res = res.replace(k, tpl.substitute(name=v))
         return res
@@ -96,17 +99,15 @@ class BisonEvnCheckerMixin:
 class BisonGenerator(BisonEvnCheckerMixin, GeneratorBase):
     tokens: set = None
 
-    def __init__(self, envs=None):
-        if envs is None:
-            self.run_env = dict(os.environ)
-        else:
-            self.run_env = envs
-        self.temp_dir = "./build/"
+    def __init__(self, envs=None, temp_dir=None):
+        self.run_env = dict(os.environ) if envs is None else envs
+        self.temp_dir = './build/' if temp_dir is None else temp_dir
         self.rules = []
-        self.load_rules()
-        self.analysis_rules()
+        self.__load_rules()
+        self.__analysis_rules()
 
-    def load_rules(self):
+    def __load_rules(self):
+        self.rules = []
         for method_name in dir(self):
             method = getattr(self, method_name)
             if callable(method):
@@ -114,17 +115,20 @@ class BisonGenerator(BisonEvnCheckerMixin, GeneratorBase):
                     self.rules.append(reg)
         return self.rules
 
-    def analysis_rules(self):
+    def __analysis_rules(self):
         self.tokens = set()
         for rule in self.rules:  # type: GrammarRegister
             rule.analysis_rules()
             self.tokens.update(rule.tokens)
 
     def generate_rule(self):
-        return "\n".join(i.generate() for i in self.rules)
+        import pprint
+        pprint.pprint(self.rules)
+        rules_str = "\n".join(i.generate() for i in self.rules)
+        return rules_str
 
     def generate(self) -> str:
-        template = Template(self.trim_rules_string("""
+        template = Template(self.trim_rules_string(r"""
         %{
             #include <stdio.h>
         %}
@@ -166,9 +170,10 @@ class BisonGenerator(BisonEvnCheckerMixin, GeneratorBase):
         proc = self.run_cmd([
             self.bin_path,
             '-o',
-            os.path.join(self.temp_dir, 'lex.yy.c'),
+            os.path.join(self.temp_dir, 'bison.c'),
+            '-d',
             bison_path
         ], env=self.run_env)
         out, err = proc.communicate()
-        print(f"error code: {proc.returncode} \n {out} {err}")
+        print(f"error code: {proc.returncode} \n {out.decode(sys.getdefaultencoding())} {err.decode(sys.getdefaultencoding())}")
 

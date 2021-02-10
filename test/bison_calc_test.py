@@ -1,6 +1,7 @@
 from pyFlexBison.gen_bison import BisonGenerator, grammar
 from unittest import mock
 
+
 def test_flex_generator_inherit_token():
     class CalcBisonGenerator(BisonGenerator):
         @grammar("""
@@ -28,16 +29,14 @@ def test_flex_generator_inherit_token():
         def exp_sub(self):
             pass
 
-
         @grammar("""
-        term: factor {##} //项::=因子
-            | term MUL factor {#term_mul_factor#} //或者，项::=项*因子
-            | term DIV factor {#term_div_factor#} //或者，项::=项/因子
-            ;
-        
-        factor: NUMBER {##} //因子::=数字
-            | ABS factor {#abs_factor#} //或者，因子::=绝对值.因子
-            ;
+            term: factor {##} //项::=因子
+                | term MUL factor {#term_mul_factor#} //或者，项::=项*因子
+                | term DIV factor {#term_div_factor#} //或者，项::=项/因子
+                ;
+            factor: NUMBER {##} //因子::=数字
+                | ABS factor {#abs_factor#} //或者，因子::=绝对值.因子
+                ;
         """)
         def term_and_factor(self, a1):
             return a1
@@ -54,11 +53,15 @@ def test_flex_generator_inherit_token():
         def abs_factor(self, a1, a2):
             return abs(a2)
 
-
     calc_bison = CalcBisonGenerator()
-    yacc = calc_bison.load_rules()
-    assert isinstance(yacc, list)
+    calc_bison.env_checker()
+
+    assert isinstance(calc_bison.rules, list)
+    assert len(calc_bison.rules) == 3
     assert calc_bison.tokens == set(['MUL', 'DIV', 'EOL', 'NUMBER', 'SUB', 'ADD', 'ABS'])
+
+    calc_bison.build()
+
 
 
 def test_flex_generator_generate():
