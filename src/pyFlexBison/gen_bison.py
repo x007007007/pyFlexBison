@@ -1,5 +1,7 @@
 import typing
 import re
+import sys
+import os
 import warnings
 from string import Template
 from .generator import GeneratorBase
@@ -60,16 +62,46 @@ def grammar(rule_string):
     return decorate
 
 
-class BisonGenerator(GeneratorBase):
-    MAC_BREW_PATH = '/usr/local/opt/bison/bin/bison'
+class BisonEvnCheckerMixin:
+    MAC_BREW_PATH = "/usr/local/opt/bison/bin/bison"
+    run_env: typing.Dict[str, str]
     bin_path: str = None
     bison_version: typing.Tuple[int, int, int] = None
     bison_bin: str = None
-    run_env: typing.Dict[str, str]
-    tokens: set = None
-    callback_name_set: set = None
 
-    def __init__(self):
+    def env_checker(self):
+        if self.run_env is None:
+            self.run_env = dict()
+        if sys.platform.startswith('darwin'):
+            if os.path.exists(self.MAC_BREW_PATH):
+                # self.run_env['LDFLAGS'] = "-L/usr/local/opt/bison/lib"
+                self.run_env['PATH'] = f"/usr/local/opt/bison/bin:{self.run_env['PATH']}"
+                proc = self.run_cmd([self.MAC_BREW_PATH, '--version'], self.run_env)
+                res, res_err = proc.communicate()
+                res = res.decode(sys.getdefaultencoding())
+                match_res = re.match(r'bison.*?\s*(\d+)\.(\d+)\.(\d+)', res)
+                if match_res:
+                    main, major, minor = (int(i) for i in match_res.groups())
+                    self.flex_version = (main, major, minor)
+                    if main < 3 or (main == 3 and major < 7 ):
+                        warnings.warn(f"bison version to low: {res}", RuntimeWarning)
+                    else:
+                        self.bin_path = self.MAC_BREW_PATH
+            else:
+                raise RuntimeError("bison don't exist")
+        elif sys.platform.startswith('linux'):
+            pass
+
+
+class BisonGenerator(BisonEvnCheckerMixin, GeneratorBase):
+    tokens: set = None
+
+    def __init__(self, envs=None):
+        if envs is None:
+            self.run_env = dict(os.environ)
+        else:
+            self.run_env = envs
+        self.temp_dir = "./build/"
         self.rules = []
         self.load_rules()
         self.analysis_rules()
@@ -117,6 +149,26 @@ class BisonGenerator(GeneratorBase):
             rules=self.generate_rule(),
         )
 
+    def get_bison_path(self):
+        if not os.path.exists(self.temp_dir):
+            os.makedirs(self.temp_dir)
+        return os.path.join(self.temp_dir, "bison.y")
 
+    def generate_file(self, bison_path):
+        with open(bison_path, 'w', encoding='utf-8') as fp:
+            fp.write(self.generate())
 
+    def build(self):
+        if self.bin_path is None:
+            raise RuntimeError("run env_checker first")
+        bison_path = self.get_bison_path()
+        self.generate_file(bison_path)
+        proc = self.run_cmd([
+            self.bin_path,
+            '-o',
+            os.path.join(self.temp_dir, 'lex.yy.c'),
+            bison_path
+        ], env=self.run_env)
+        out, err = proc.communicate()
+        print(f"error code: {proc.returncode} \n {out} {err}")
 

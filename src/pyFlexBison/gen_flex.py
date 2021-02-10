@@ -26,13 +26,40 @@ class TokenRule():
         self.token_process = method
 
 
-class FlexGenerator(GeneratorBase):
+class FlexEvnCheckerMixin:
+    run_env: typing.Dict[str, str]
     MAC_BREW_PATH = '/usr/local/opt/flex/bin/flex'
     bin_path: str = None
     flex_version: typing.Tuple[int, int, int] = None
     flex_bin: str = None
+
+    def env_checker(self):
+        if self.run_env is None:
+            self.run_env = dict()
+        if sys.platform.startswith('darwin'):
+            if os.path.exists(self.MAC_BREW_PATH):
+                self.run_env['LDFLAGS'] = "-L/usr/local/opt/flex/lib"
+                self.run_env['CPPFLAGS'] = "-I/usr/local/opt/flex/include"
+                self.run_env['PATH'] = f"/usr/local/opt/flex/bin:{self.run_env['PATH']}"
+                proc = self.run_cmd([self.MAC_BREW_PATH, '--version'], self.run_env)
+                res, res_err = proc.communicate()
+                res = res.decode(sys.getdefaultencoding())
+                match_res = re.match(r'flex\s*(\d+)\.(\d+)\.(\d+)', res)
+                if match_res:
+                    main, major, minor = (int(i) for i in match_res.groups())
+                    self.flex_version = (main, major, minor)
+                    if main < 2 or (main == 2 and major < 4 ):
+                        raise RuntimeError(f"Flex version to low: {res}")
+                    else:
+                        self.bin_path = self.MAC_BREW_PATH
+            else:
+                raise RuntimeError("flex don't exist")
+        elif sys.platform.startswith('linux'):
+            pass
+
+
+class FlexGenerator(FlexEvnCheckerMixin, GeneratorBase):
     token_rule: str = None
-    run_env: typing.Dict[str, str]
 
     def __init__(self, bison_header: str=None, envs=None):
         if bison_header is None:
@@ -58,28 +85,6 @@ class FlexGenerator(GeneratorBase):
 
     def generate_rule(self) -> str:
         return "\n".join((str(i) for i in self.tokens))
-
-    def env_checker(self):
-        if sys.platform.startswith('darwin'):
-            if os.path.exists(self.MAC_BREW_PATH):
-                self.run_env['LDFLAGS'] = "-L/usr/local/opt/flex/lib"
-                self.run_env['CPPFLAGS'] = "-I/usr/local/opt/flex/include"
-                self.run_env['PATH'] = f"/usr/local/opt/flex/bin:{self.run_env['PATH']}"
-                proc = self.run_cmd([self.MAC_BREW_PATH, '--version'], self.run_env)
-                res, res_err = proc.communicate()
-                res = res.decode(sys.getdefaultencoding())
-                match_res = re.match(r'flex\s*(\d+)\.(\d+)\.(\d+)', res)
-                if match_res:
-                    main, major, minor = (int(i) for i in match_res.groups())
-                    self.flex_version = (main, major, minor)
-                    if main < 2 or (main == 2 and major < 4 ):
-                        raise RuntimeError(f"Flex version to low: {res}")
-                    else:
-                        self.bin_path = self.MAC_BREW_PATH
-            else:
-                raise RuntimeError("flex don't exist")
-        elif sys.platform.startswith('linux'):
-            pass
 
     def generate(self) -> str:
         template = Template(self.trim_rules_string("""
