@@ -4,7 +4,7 @@ import sys
 import os
 import warnings
 from string import Template
-from .generator import CommandGeneratorBase
+from .generator import CommandGeneratorBase, CodeGeneratorMixin
 
 
 class GrammarRegister:
@@ -96,7 +96,7 @@ class BisonEvnCheckerMixin:
             pass
 
 
-class BisonGenerator(BisonEvnCheckerMixin, CommandGeneratorBase):
+class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorBase):
     tokens: set = None
 
     def __init__(self, *args, **kwargs):
@@ -122,8 +122,6 @@ class BisonGenerator(BisonEvnCheckerMixin, CommandGeneratorBase):
             self.tokens.update(rule.tokens)
 
     def generate_rule(self):
-        import pprint
-        pprint.pprint(self.rules)
         rules_str = "\n".join(i.generate() for i in self.rules)
         return rules_str
 
@@ -158,22 +156,22 @@ class BisonGenerator(BisonEvnCheckerMixin, CommandGeneratorBase):
             os.makedirs(self.temp_dir)
         return os.path.join(self.temp_dir, "bison.y")
 
-    def generate_file(self, bison_path):
-        with open(bison_path, 'w', encoding='utf-8') as fp:
-            fp.write(self.generate())
-
     def build(self):
         if self.bin_path is None:
             raise RuntimeError("run env_checker first")
         bison_path = self.get_bison_path()
         self.generate_file(bison_path)
+        output_c = os.path.join(self.temp_dir, 'bison.c')
         proc = self.run_cmd([
             self.bin_path,
             '-o',
-            os.path.join(self.temp_dir, 'bison.c'),
+            output_c,
             '-d',
             bison_path
         ], env=self.run_env)
         out, err = proc.communicate()
+        if proc.returncode == 0:
+            self.output_c = output_c
+            self.output_h = os.path.join(self.temp_dir, 'bison.h')
         print(f"error code: {proc.returncode} \n {out.decode(sys.getdefaultencoding())} {err.decode(sys.getdefaultencoding())}")
 

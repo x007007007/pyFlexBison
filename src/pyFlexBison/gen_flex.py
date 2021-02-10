@@ -3,7 +3,7 @@ import os
 import typing
 import re
 from string import Template
-from .generator import CommandGeneratorBase
+from .generator import CommandGeneratorBase, CodeGeneratorMixin
 
 
 class TokenRule():
@@ -58,7 +58,11 @@ class FlexEvnCheckerMixin:
             pass
 
 
-class FlexGenerator(FlexEvnCheckerMixin, CommandGeneratorBase):
+class FlexGenerator(
+    FlexEvnCheckerMixin,
+    CodeGeneratorMixin,
+    CommandGeneratorBase
+):
     token_rule: str = None
 
     def __init__(self, bison_header: str=None, *args, **kwargs):
@@ -88,6 +92,7 @@ class FlexGenerator(FlexEvnCheckerMixin, CommandGeneratorBase):
         %{
             #include "$header_name"
         %}
+        %option noyywrap
         
         %%
         $rules
@@ -103,21 +108,19 @@ class FlexGenerator(FlexEvnCheckerMixin, CommandGeneratorBase):
             os.makedirs(self.temp_dir)
         return os.path.join(self.temp_dir, "flex.l")
 
-    def generate_file(self, flex_path):
-        with open(flex_path, 'w', encoding='utf-8') as fp:
-            fp.write(self.generate())
-
-
     def build(self):
         if self.bin_path is None:
             raise RuntimeError("run env_checker first")
         flex_path = self.get_flex_path()
         self.generate_file(flex_path)
+        output_c = os.path.join(self.temp_dir, 'lex.yy.c')
         proc = self.run_cmd([
             self.bin_path,
             '-o',
-            os.path.join(self.temp_dir, 'lex.yy.c'),
+            output_c,
             flex_path
         ], env=self.run_env)
         out, err = proc.communicate()
+        if proc.returncode == 0:
+            self.output_c = output_c
         print(f"error code: {proc.returncode} \n {out} {err}")

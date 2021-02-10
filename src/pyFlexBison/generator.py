@@ -1,4 +1,5 @@
 import subprocess
+import typing
 import warnings
 import os
 import re
@@ -19,9 +20,6 @@ class GeneratorBase(object):
                     warnings.warn('ident not match on {i}', SyntaxWarning)
         return "\n".join(rules)
 
-    def generate(self) -> str:
-        raise NotImplementedError
-
     def build_command(self, path):
         raise NotImplementedError
 
@@ -41,7 +39,18 @@ class GeneratorBase(object):
         return proc
 
 
+class CodeGeneratorMixin(GeneratorBase):
+    def generate(self) -> str:
+        raise NotImplementedError
+
+    def generate_file(self, output_path):
+        with open(output_path, 'w', encoding='utf-8') as fp:
+            fp.write(self.generate())
+
+
 class CommandGeneratorBase(GeneratorBase):
+    run_env: typing.Dict[str, str]
+    temp_dir: str = None
 
     def __init__(self, envs=None, temp_dir=None, *args, **kwargs):
         self.run_env = dict(os.environ) if envs is None else envs
