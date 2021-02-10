@@ -4,7 +4,7 @@ import sys
 import os
 import warnings
 from string import Template
-from .generator import GeneratorBase
+from .generator import CommandGeneratorBase
 
 
 class GrammarRegister:
@@ -58,7 +58,7 @@ class GrammarRegister:
 
 
 def grammar(rule_string):
-    rule_string = GeneratorBase.trim_rules_string(rule_string)
+    rule_string = CommandGeneratorBase.trim_rules_string(rule_string)
     def decorate(func):
         func.register = GrammarRegister(rule_string, func)
         return func
@@ -96,15 +96,15 @@ class BisonEvnCheckerMixin:
             pass
 
 
-class BisonGenerator(BisonEvnCheckerMixin, GeneratorBase):
+class BisonGenerator(BisonEvnCheckerMixin, CommandGeneratorBase):
     tokens: set = None
 
-    def __init__(self, envs=None, temp_dir=None):
-        self.run_env = dict(os.environ) if envs is None else envs
-        self.temp_dir = './build/' if temp_dir is None else temp_dir
+    def __init__(self, *args, **kwargs):
+        super(BisonGenerator, self).__init__(*args, **kwargs)
         self.rules = []
         self.__load_rules()
         self.__analysis_rules()
+
 
     def __load_rules(self):
         self.rules = []

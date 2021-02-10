@@ -3,7 +3,7 @@ import os
 import typing
 import re
 from string import Template
-from .generator import GeneratorBase
+from .generator import CommandGeneratorBase
 
 
 class TokenRule():
@@ -58,17 +58,14 @@ class FlexEvnCheckerMixin:
             pass
 
 
-class FlexGenerator(FlexEvnCheckerMixin, GeneratorBase):
+class FlexGenerator(FlexEvnCheckerMixin, CommandGeneratorBase):
     token_rule: str = None
 
-    def __init__(self, bison_header: str=None, envs=None):
+    def __init__(self, bison_header: str=None, *args, **kwargs):
+        super(FlexGenerator, self).__init__(*args, **kwargs)
         if bison_header is None:
-            self.bison_header = "flex_bison.h"
-        self.temp_dir = "./build/"
-        if envs is None:
-            self.run_env = dict(os.environ)
-        else:
-            self.run_env = envs
+            self.bison_header = "bison.h"
+
         self.tokens = []
         if self.token_rule is not None:
             self._analysis_rule()

@@ -1,5 +1,6 @@
 import subprocess
 import warnings
+import os
 import re
 
 class GeneratorBase(object):
@@ -38,3 +39,10 @@ class GeneratorBase(object):
             env=env
         )
         return proc
+
+
+class CommandGeneratorBase(GeneratorBase):
+
+    def __init__(self, envs=None, temp_dir=None, *args, **kwargs):
+        self.run_env = dict(os.environ) if envs is None else envs
+        self.temp_dir = './build/' if temp_dir is None else temp_dir

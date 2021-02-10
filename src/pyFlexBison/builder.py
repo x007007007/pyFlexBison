@@ -2,5 +2,5 @@
 
 class Builder():
 
-    def __inti__(self, flex_generator, bison_generator):
+    def __init__(self, flex_generator, bison_generator):
         pass
