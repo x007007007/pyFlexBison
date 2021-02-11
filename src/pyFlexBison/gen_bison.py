@@ -8,11 +8,13 @@ from .generator import CommandGeneratorBase, CodeGeneratorMixin
 
 
 class GrammarRegister:
-    def __init__(self, rule_string, func):
+    def __init__(self, rule_string, func, argc: int):
+        self.argc = argc
         self.__tokens = set()
         self.func = func
         self.rule_string = rule_string.strip()
         self.sub_func_map = {}
+        self.sub_func_argc_map = {}
 
     def __repr__(self):
         rule_headers = self.rule_string.strip().split('\n', maxsplit=1)
@@ -20,12 +22,13 @@ class GrammarRegister:
             summary = rule_headers[0]
         return f"<BNF:{summary} ...>"
 
-    def __call__(self, name=None):
+    def __call__(self, argc, name=None):
         def decorate(func):
             nonlocal name
             if name is None:
                 name = func.__name__
             self.sub_func_map[name] = func
+            self.sub_func_argc_map[name] = argc
             return func
         return decorate
 
@@ -49,18 +52,29 @@ class GrammarRegister:
             else:
                 self.callback_replace[name_replace_hold] = callback_method
 
+
     def generate(self):
         res = self.rule_string  # type: str
-        tpl = Template('{ $$$$ = bison_callback("$name"); }')
+        tpl = Template('{ $$$$ = bison_callback("$name"$args); }')
         for k, v in self.callback_replace.items():
-            res = res.replace(k, tpl.substitute(name=v.__name__))
+            if k == "{##}":
+                argc = self.argc
+            else:
+                argc = self.sub_func_argc_map[k[2:-2]]
+            args = [str(argc)]
+            for i in range(argc):
+                args.append(f"${i}")
+            res = res.replace(k, tpl.substitute(
+                name=v.__name__,
+                args=f', {", ".join(args)}'
+            ))
         return res
 
 
-def grammar(rule_string):
+def grammar(rule_string, argc):
     rule_string = CommandGeneratorBase.trim_rules_string(rule_string)
     def decorate(func):
-        func.register = GrammarRegister(rule_string, func)
+        func.register = GrammarRegister(rule_string, func, argc)
         return func
     return decorate
 
@@ -189,12 +203,12 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
             int yylex();
             void yyerror(char *s);
             
-            YYSTYPE bison_callback(char *name, ...) {
-                printf("bison_callback %s", name);
+            YYSTYPE bison_callback(char *name, int argc, ...) {
+                printf("bison_callback %s\n", name);
             }
             
             callback_token_process(char *name, ...) {
-                printf("callback_token_process %s", name);
+                printf("callback_token_process %s\n", name);
             }
         %}
 

@@ -8,7 +8,7 @@ def test_flex_generator_inherit_token():
             calclist:
                 | calclist exp EOL {##} 
                 ;
-        """)
+        """, argc=3)
         def calclist(self, *args, **kwargs):
             print(args[1])
 
@@ -17,15 +17,15 @@ def test_flex_generator_inherit_token():
                 | exp ADD term {#exp_add#} //或者，表达式::=表达式+项
                 | exp SUB term {#exp_sub#} //或者，表达式::=表达式-项
                 ;
-        """)
+        """, argc=1)
         def exp_add_sub(self):
             pass
 
-        @exp_add_sub.register()
+        @exp_add_sub.register(argc=3)
         def exp_add(self):
             pass
 
-        @exp_add_sub.register()
+        @exp_add_sub.register(argc=3)
         def exp_sub(self):
             pass
 
@@ -37,19 +37,19 @@ def test_flex_generator_inherit_token():
             factor: NUMBER {##} //因子::=数字
                 | ABS factor {#abs_factor#} //或者，因子::=绝对值.因子
                 ;
-        """)
+        """, argc=1)
         def term_and_factor(self, a1):
             return a1
 
-        @term_and_factor.register()
+        @term_and_factor.register(argc=3)
         def term_mul_factor(self, a1, a2, a3):
             return a1 * a3
 
-        @term_and_factor.register()
+        @term_and_factor.register(argc=3)
         def term_div_factor(self, a1, a2, a3):
             return a1 / a3
 
-        @term_and_factor.register()
+        @term_and_factor.register(argc=2)
         def abs_factor(self, a1, a2):
             return abs(a2)
 
@@ -70,7 +70,7 @@ def test_flex_generator_generate():
             calclist:
                 | calclist exp EOL {##} 
                 ;
-        """)
+        """, argc=3)
         def calclist(self, *args, **kwargs):
             print(args[1])
 
@@ -79,15 +79,15 @@ def test_flex_generator_generate():
                 | exp ADD term {#exp_add#} //或者，表达式::=表达式+项
                 | exp SUB term {#exp_sub#} //或者，表达式::=表达式-项
                 ;
-        """)
+        """, argc=1)
         def exp_add_sub(self):
             pass
 
-        @exp_add_sub.register()
+        @exp_add_sub.register(argc=3)
         def exp_add(self):
             pass
 
-        @exp_add_sub.register()
+        @exp_add_sub.register(argc=3)
         def exp_sub(self):
             pass
 
