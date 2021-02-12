@@ -23,20 +23,49 @@ cdef extern from "stdio.h":
 
 cdef extern from "string.h":
     void *memcpy(void *dest, void *src, long n)
+    int strlen(void *str)
 
 
+import os
+cimport dlfcn
 
-cdef class RunnerEngine:
+
+cdef class RunnerBNF:
     cdef object parser
     cdef object parserHash # hash of current python parser object
     cdef object libFilename_py
-
-    cdef void *libHandle
-
+    cdef object name
+    cdef void *libHandler
     # rules hash str embedded in bison parser lib
     cdef char *libHash
+    cdef char *libPath
+    cdef object lib_path
+    cdef (void)(*start_parse)(object parser, object input_cb)
+    cdef char[10000] buffer
 
-    def __init__(self, parser):
+    def __init__(self, name, parser):
+        self.name = name
         self.parser = parser
-        printf("hello world \n")
+        self.config_lib_path(name)
 
+    def config_lib_path(self, name):
+        self.lib_path =  f"./build/{name}.so"
+        if not os.path.exists(self.lib_path):
+            raise RuntimeError("{} not exist".format(self.lib_path))
+        self.libPath = PyBytes_AsString(self.lib_path.encode("utf-8"))
+
+    def dynamic_load(self):
+        self.libHandler = dlfcn.dlopen(self.libPath, dlfcn.RTLD_NOW|dlfcn.RTLD_GLOBAL)
+        if self.libHandler == NULL:
+            print(dlfcn.dlerror())
+        printf("!!!!!self.libHeader\n")
+        self.start_parse =  <void (*)(object, object)>dlfcn.dlsym(self.libHandler, "start_parse")
+        self.start_parse(self.parser, self.load_context)
+
+    def load_context(self, size=8000):
+        cxt = self.parser.read_context(size)
+        py_char = PyBytes_AsString(cxt)
+        string_len = strlen(py_char)
+        memcpy(self.buffer, py_char, string_len)
+        self.buffer[string_len+1] = '\0'
+        return self.buffer
