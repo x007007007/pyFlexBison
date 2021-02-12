@@ -152,6 +152,8 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
         for rule in self.rules:  # type: GrammarRegister
             rule.analysis_rules()
             self.tokens.update(rule.tokens)
+        self.tokens_list = list(self.tokens)
+        self.tokens_list.sort()
 
     def generate_rule(self):
         rules_str = "\n".join(i.generate() for i in self.rules)
@@ -179,6 +181,9 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
             #define PY_SSIZE_T_CLEAN
             #include "Python.h"
             #define YYSTYPE PyObject *
+            // void *(*py_callback)(void *, char *, int, int, ...);
+            // void (*py_input)(void *, char *, int *, int);
+            PyObject *py_parser;
         }
         
         %code requires {
@@ -190,6 +195,13 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
               definitions, then it is also the best place. However you 
               should rather %define api.value.type and api.location.type. 
             */
+
+            #define YY_INPUT(buf,result,max_size) { \
+                printf("wait input\n"); \
+                int c = getchar(); \
+                printf("YY_INPUT: %d / %d \n ", c, max_size); \
+                result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); \
+            }
         }
         
         %code provides {
@@ -207,7 +219,7 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
                 printf("bison_callback %s\n", name);
             }
             
-            callback_token_process(char *name, ...) {
+            int callback_token_process(char *name, int argc, ...) {
                 printf("callback_token_process %s\n", name);
             }
         %}
@@ -221,7 +233,10 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
         $rules
         %%
         
-        int main(int argc, char **argv) {
+        __attribute__ ((dllexport)) int start_parse(
+            PyObject* _parser
+        ) {
+            py_parser = _parser;
             yyparse();
             return 0;
         }
@@ -231,7 +246,7 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
         }
         """))
         return template.substitute(
-            tokens=" ".join(self.tokens),
+            tokens=" ".join(self.tokens_list),
             rules=self.generate_rule(),
             optional=self.generate_optional()
         )

@@ -17,7 +17,8 @@ class TokenRule():
     def __str__(self):
         ret_list = []
         if self.token_process is not None:
-            ret_list.append(f'callback_token_process("{self.token_process.__name__}");')
+            ret_list.append(
+                f'callback_token_process("{self.token_process.__name__}", 0);')
         if self.token_name != "":
             ret_list.append(f"return {self.token_name};")
         return f"{self.token_r}     {'{'}  {'/* */ '.join(ret_list)}  {'}'}"
@@ -87,16 +88,16 @@ class FlexGenerator(
 
     def generate(self) -> str:
         template = Template(self.trim_rules_string(r"""
-        %{
+        %{    
             #include "$header_name"
+            int yywrap() { return(1); }
         %}
-        
-        %option noyywrap
-        
+                
         %%
         $rules
         .       { printf("Mystery charactor %c\n", *yytext); } 
         %%
+        
         """))
         return template.substitute(
             rules=self.generate_rule(),

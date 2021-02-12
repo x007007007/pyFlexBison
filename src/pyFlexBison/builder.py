@@ -69,13 +69,16 @@ class Builder(CommandGeneratorBase):
             self.include_dirs.extend(
                 plat_py_include.split(os.path.pathsep))
 
-        output = os.path.join(self.temp_dir, f"{self.name}.o")
+        output = os.path.join(self.temp_dir, f"{self.name}.so")
         cmds = [
             self.bin_path,
+            '-fPIC',
+            '-shared',
             self.flex.output_c,
             self.bison.output_c,
-            self.bison.output_h,
-            *[f"-I{i}" for i in self.include_dirs]
+            *[f"-I{i}" for i in self.include_dirs],
+            '-o',
+            output
         ]
         proc = self.run_cmd(cmds, env=self.flex.run_env)
         out, err = proc.communicate()
