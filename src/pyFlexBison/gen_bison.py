@@ -176,14 +176,11 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
             be more appropriate than %code top. However, occasionally 
             it is necessary to insert code much nearer the top 
             of the parser implementation file. */
-            // #define _GNU_SOURCE
-            // #include <stdio.h>
+            #include <stdio.h>
             #define PY_SSIZE_T_CLEAN
             #include "Python.h"
             #define YYSTYPE PyObject *
-            // void *(*py_callback)(void *, char *, int, int, ...);
-            // void (*py_input)(void *, char *, int *, int);
-            PyObject *py_parser;
+
         }
         
         %code requires {
@@ -195,12 +192,15 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
               definitions, then it is also the best place. However you 
               should rather %define api.value.type and api.location.type. 
             */
-
-            #define YY_INPUT(buf,result,max_size) { \
-                printf("wait input\n"); \
-                int c = getchar(); \
-                printf("YY_INPUT: %d / %d \n ", c, max_size); \
-                result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); \
+            #define PY_SSIZE_T_CLEAN
+            #include "Python.h"
+            #define YYSTYPE PyObject *
+            
+            int yy_from_python_input(PyObject * pipeline, char * buf,int * result_len, int max_size);
+            
+            PyObject *py_pipeline;
+            #define YY_INPUT(buf, result, max_size) { \
+                yy_from_python_input(py_pipeline, buf, &result, max_size); \
             }
         }
         
@@ -214,14 +214,67 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
         %{
             int yylex();
             void yyerror(char *s);
+            extern PyObject *py_pipeline;
             
             YYSTYPE bison_callback(char *name, int argc, ...) {
                 printf("bison_callback %s\n", name);
+                PyObject * bison_proc_cb = PyObject_GetAttrString(py_pipeline, "bison_proc");
+                if(bison_proc_cb == NULL) {
+                    // error
+                    printf("bison_proc_cb is NULL");
+                    // Py_INCREF(Py_None);
+                    // return Py_None;
+                }
             }
             
             int callback_token_process(char *name, int argc, ...) {
                 printf("callback_token_process %s\n", name);
+                printf("callback_token_process  py_pipeline: %p\n", py_pipeline);
+                PyObject * token_proc_cb = PyObject_GetAttrString(py_pipeline, "token_proc");
+                if(token_proc_cb == NULL) {
+                    // error
+                    printf("token_proc_cb is NULL");
+                    return 0;
+                }
+                return 0;
             }
+            
+            int yy_from_python_input(PyObject *py_pipeline, char *buf, int *read_number, int max_size) {
+                printf("wait input %p\n", py_pipeline);
+                PyObject * read_callback = PyObject_GetAttrString(py_pipeline, "read_context");
+                if(read_callback == NULL) {
+                    // error
+                    printf("read_callback is NULL");
+                    *read_number = 0;
+                    return 0;
+                }
+                PyObject *args = Py_BuildValue("(i)", max_size);  
+                if(args == NULL) {
+                    printf("Py_BuildValue Error ");
+                    //error
+                }
+                else {
+                    PyObject *kwargs = PyDict_New();
+                    if (kwargs == NULL) {
+                        //error
+                    } else {
+                        PyObject *result = PyObject_Call(read_callback, args, kwargs);
+                        if(result == NULL) {
+                            // error
+                        } else {
+                            char *py_char = PyBytes_AsString(result);
+                            int py_char_len = strlen(py_char);
+                            *read_number = py_char_len;
+                            memcpy(buf, py_char, py_char_len);
+                            printf("read from python: %s\n", py_char);
+                            Py_DECREF(result);
+                        }
+                        Py_DECREF(kwargs);    
+                    }
+                    Py_DECREF(args);
+                 }
+                Py_DECREF(read_callback);
+           }
         %}
 
         
@@ -233,10 +286,14 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
         $rules
         %%
         
-        __attribute__ ((dllexport)) int start_parse(
-            PyObject* _parser
+        // __attribute__ ((dllexport))
+        int start_parse(
+            PyObject *_pipeline,
+            PyObject *_input_cb,
+            ...
         ) {
-            py_parser = _parser;
+            printf("\nhello world\n");
+            py_pipeline = _pipeline;
             yyparse();
             return 0;
         }
@@ -273,5 +330,5 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
         if proc.returncode == 0:
             self.output_c = output_c
             self.output_h = os.path.join(self.temp_dir, 'bison.h')
-        print(f"error code: {proc.returncode} \n {out.decode(sys.getdefaultencoding())} {err.decode(sys.getdefaultencoding())}")
+        # print(f"error code: {proc.returncode} \n {out.decode(sys.getdefaultencoding())} {err.decode(sys.getdefaultencoding())}")
 

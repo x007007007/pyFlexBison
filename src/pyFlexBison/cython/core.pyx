@@ -58,14 +58,6 @@ cdef class RunnerBNF:
         self.libHandler = dlfcn.dlopen(self.libPath, dlfcn.RTLD_NOW|dlfcn.RTLD_GLOBAL)
         if self.libHandler == NULL:
             print(dlfcn.dlerror())
-        printf("!!!!!self.libHeader\n")
         self.start_parse =  <void (*)(object, object)>dlfcn.dlsym(self.libHandler, "start_parse")
         self.start_parse(self.parser, self.load_context)
 
-    def load_context(self, size=8000):
-        cxt = self.parser.read_context(size)
-        py_char = PyBytes_AsString(cxt)
-        string_len = strlen(py_char)
-        memcpy(self.buffer, py_char, string_len)
-        self.buffer[string_len+1] = '\0'
-        return self.buffer

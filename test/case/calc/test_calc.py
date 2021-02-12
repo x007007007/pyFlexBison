@@ -1,8 +1,7 @@
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from calc_bison import CalcBisonGenerator
-from calc_flex import CalcFlexGenerator
+from pyFlexExample.calc.calc_bison import CalcBisonGenerator
+from pyFlexExample.calc.calc_flex import CalcFlexGenerator
 from pyFlexBison.builder import Builder
 
 

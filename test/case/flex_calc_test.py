@@ -28,7 +28,7 @@ def test_flex_generator_inherit_method():
     print(lex_container)
     assert lex_container == r"""
 "+"     {  return ADD;  }
-[0-9]+     {  callback_token_process("t_number");/* */ return NUMBER;  }
+[0-9]+     {  callback_token_process("t_number", 0);/* */ return NUMBER;  }
     """.strip()
 
 

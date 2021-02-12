@@ -65,11 +65,15 @@ class Builder(CommandGeneratorBase):
         py_include = sysconfig.get_python_inc()
         plat_py_include = sysconfig.get_python_inc(plat_specific=1)
         self.include_dirs.extend(py_include.split(os.path.pathsep))
+        self.libraries.append(sysconfig.get_config_var('LIBDIR'))
+
         if plat_py_include != py_include:
             self.include_dirs.extend(
                 plat_py_include.split(os.path.pathsep))
-
-        output = os.path.join(self.temp_dir, f"{self.name}.so")
+        if sys.platform.startswith("win32"):
+            output = os.path.join(self.temp_dir, f"{self.name}.dll")
+        else:
+            output = os.path.join(self.temp_dir, f"{self.name}.so")
         cmds = [
             self.bin_path,
             '-fPIC',
@@ -77,9 +81,12 @@ class Builder(CommandGeneratorBase):
             self.flex.output_c,
             self.bison.output_c,
             *[f"-I{i}" for i in self.include_dirs],
+            *[f"-L{i}" for i in self.libraries],
+            '-lpython3.8',
             '-o',
             output
         ]
+        print(cmds)
         proc = self.run_cmd(cmds, env=self.flex.run_env)
         out, err = proc.communicate()
         print(f"error code: {proc.returncode} \n"

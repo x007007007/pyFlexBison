@@ -46,6 +46,9 @@ def generate_extension():
         **cython_args
     )
 
+packages = find_packages(where="src")
+packages = [i for i in packages if not i.startswith("pyFlexExample")]
+
 setup(
     name='pyLALR1',
     description='',
@@ -57,9 +60,11 @@ setup(
     # keywords=KEYWORDS,
     # long_description=read("README.md"),
     long_description_content_type="text/markdown",
-    packages=find_packages(where="src"),
+    packages=packages,
     package_data={'pyLALR1': []},
-    package_dir={"": "src"},
+    package_dir={
+        "": "src",
+    },
     zip_safe=False,
     # classifiers=CLASSIFIERS,
     install_requires=[
