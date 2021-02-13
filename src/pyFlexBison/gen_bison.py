@@ -63,7 +63,7 @@ class GrammarRegister:
                 argc = self.sub_func_argc_map[k[2:-2]]
             args = [str(argc)]
             for i in range(argc):
-                args.append(f"${i}")
+                args.append(f"${i+1}")
             res = res.replace(k, tpl.substitute(
                 name=v.__name__,
                 args=f', {", ".join(args)}'
@@ -177,6 +177,7 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
             it is necessary to insert code much nearer the top 
             of the parser implementation file. */
             #include <stdio.h>
+            #include <stdarg.h>
             #define PY_SSIZE_T_CLEAN
             #include "Python.h"
             #define YYSTYPE PyObject *
@@ -216,15 +217,72 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
             void yyerror(char *s);
             extern PyObject *py_pipeline;
             
+            void print_py_obj(PyObject *obj) {
+                PyObject* obj_repr = PyObject_Repr(obj);
+                if (obj_repr != NULL){
+                    PyObject * temp_bytes = PyUnicode_AsEncodedString(obj_repr, "UTF-8", "strict");
+                    if (temp_bytes != NULL) {
+                        char *obj_repr_c_str = PyBytes_AS_STRING(temp_bytes);
+                        printf("py obj: %s\n", obj_repr_c_str);
+                        Py_DECREF(temp_bytes);
+                    } else {
+                        // TODO: Handle encoding error.
+                    }
+                    Py_DECREF(obj_repr);
+                }
+            }
+            
             YYSTYPE bison_callback(char *name, int argc, ...) {
+                va_list ap;
+                PyObject 
+                    *args = PyTuple_New(argc + 1),
+                    *temp = NULL,
+                    *handle = NULL;
+                PyTuple_SET_ITEM(args, 0, PyUnicode_FromString(name));
+                va_start(ap, argc);
+                for(int i = 0; i < argc; i++) {
+                    handle = (PyObject *)va_arg(ap, PyObject *);
+                    if(handle == NULL){
+                        Py_INCREF(Py_None);
+                        handle = Py_None;
+                    }
+                    PyTuple_SET_ITEM(args, i + 1, handle);
+                }
+                va_end(ap);
+                print_py_obj(args);
                 printf("bison_callback %s\n", name);
                 PyObject * bison_proc_cb = PyObject_GetAttrString(py_pipeline, "bison_proc");
                 if(bison_proc_cb == NULL) {
                     // error
-                    printf("bison_proc_cb is NULL");
-                    // Py_INCREF(Py_None);
-                    // return Py_None;
+                    printf("Error bison_proc_cb is NULL");
+                    Py_INCREF(Py_None);
+                    return Py_None;
                 }
+                if(args == NULL) {
+                    printf("Py_BuildValue Error ");
+                    Py_INCREF(Py_None);
+                    return Py_None;
+                }
+                else {
+                    PyObject *kwargs = PyDict_New();
+                    if (kwargs == NULL) {
+                        //error
+                    } else {
+                        PyObject *result = PyObject_Call(bison_proc_cb, args, kwargs);
+                        if(result == NULL) {
+                            // error
+                        } else {
+                            printf("call bison callback: %s \n ", name);
+                            Py_DECREF(result);
+                        }
+                        Py_DECREF(kwargs);    
+                    }
+                    Py_DECREF(args);
+                 }
+                Py_DECREF(bison_proc_cb);
+               
+                Py_INCREF(Py_None);
+                return Py_None;
             }
             
             int callback_token_process(char *name, int argc, ...) {

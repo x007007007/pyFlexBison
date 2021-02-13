@@ -35,6 +35,17 @@ class Builder(CommandGeneratorBase):
         self.include_dirs = ['./build/']
         self.libraries = []
 
+    @property
+    def output(self):
+        if sys.platform.startswith("win32"):
+            output = os.path.join(self.temp_dir, f"{self.name}.dll")
+        else:
+            output = os.path.join(self.temp_dir, f"{self.name}.so")
+        return output
+
+    def clean(self):
+        if os.path.exists(self.output):
+            os.unlink(self.output)
 
     def env_checker(self):
         if self.run_env is None:
@@ -70,10 +81,7 @@ class Builder(CommandGeneratorBase):
         if plat_py_include != py_include:
             self.include_dirs.extend(
                 plat_py_include.split(os.path.pathsep))
-        if sys.platform.startswith("win32"):
-            output = os.path.join(self.temp_dir, f"{self.name}.dll")
-        else:
-            output = os.path.join(self.temp_dir, f"{self.name}.so")
+
         cmds = [
             self.bin_path,
             '-fPIC',
@@ -84,9 +92,8 @@ class Builder(CommandGeneratorBase):
             *[f"-L{i}" for i in self.libraries],
             '-lpython3.8',
             '-o',
-            output
+            self.output
         ]
-        print(cmds)
         proc = self.run_cmd(cmds, env=self.flex.run_env)
         out, err = proc.communicate()
         print(f"error code: {proc.returncode} \n"

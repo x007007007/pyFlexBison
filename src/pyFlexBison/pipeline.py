@@ -16,6 +16,7 @@ class Pipeline(PipelineMeta):
         self.yacc = yacc
         self.build = Builder(self.name, self.lex, self.yacc)
         self.build.env_checker()
+        self.build.clean()
         self.build.build()
         self.fp = io.StringIO("""1+2/3-4*5""")
         self.runner = RunnerBNF(name, self)
@@ -27,10 +28,10 @@ class Pipeline(PipelineMeta):
         return self.fp.read(size).encode("utf-8")
 
     def bison_proc(self, name, *args, **kwargs):
-        print(name)
+        print(f"bison_proc: {name}")
         return getattr(self.yacc, name)(*args, **kwargs)
 
 
     def token_proc(self, name, *args, **kwargs):
-        print(name)
+        print(f"token_proc: {name}")
         return getattr(self.lex, name)(*args, **kwargs)
