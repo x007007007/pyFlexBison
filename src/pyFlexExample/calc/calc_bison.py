@@ -37,6 +37,7 @@ class CalcBisonGenerator(BisonGenerator):
             ;
     """, argc=1)
     def term_and_factor(self, a1):
+        print("this is python code")
         return a1
 
     @term_and_factor.register(argc=3)

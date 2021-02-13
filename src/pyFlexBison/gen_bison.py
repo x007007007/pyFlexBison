@@ -237,64 +237,113 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
                 PyObject 
                     *args = PyTuple_New(argc + 1),
                     *temp = NULL,
-                    *handle = NULL;
-                PyTuple_SET_ITEM(args, 0, PyUnicode_FromString(name));
-                va_start(ap, argc);
-                for(int i = 0; i < argc; i++) {
-                    handle = (PyObject *)va_arg(ap, PyObject *);
-                    if(handle == NULL){
-                        Py_INCREF(Py_None);
-                        handle = Py_None;
-                    }
-                    PyTuple_SET_ITEM(args, i + 1, handle);
-                }
-                va_end(ap);
-                print_py_obj(args);
-                printf("bison_callback %s\n", name);
-                PyObject * bison_proc_cb = PyObject_GetAttrString(py_pipeline, "bison_proc");
-                if(bison_proc_cb == NULL) {
-                    // error
-                    printf("Error bison_proc_cb is NULL");
-                    Py_INCREF(Py_None);
-                    return Py_None;
-                }
+                    *handle = NULL,
+                    *bison_proc_cb = NULL,
+                    *kwargs = NULL,
+                    *result = NULL;
+                
                 if(args == NULL) {
                     printf("Py_BuildValue Error ");
+                    goto error_defer_0;
+                } else {
+                    Py_INCREF(args);
+                    PyTuple_SET_ITEM(args, 0, PyUnicode_FromString(name));
+                    // -----------------------------------------------
+                    va_start(ap, argc);
+                    for(int i = 0; i < argc; i++) {
+                        handle = (PyObject *)va_arg(ap, PyObject *);
+                        if(handle == NULL){
+                            handle = Py_None;
+                        }
+                        PyTuple_SET_ITEM(args, i + 1, handle);
+                    }
+                    va_end(ap);
+                    // ------------------------------------------------
+                    printf("bison_callback %s\n", name);
+                    bison_proc_cb = PyObject_GetAttrString(py_pipeline, "bison_proc");
+                    if(bison_proc_cb == NULL) {
+                        printf("Error bison_proc is NULL\n");
+                        print_py_obj(py_pipeline);
+                        goto error_defer_1;
+                    }
+                    Py_INCREF(bison_proc_cb);
+                    kwargs = PyDict_New();
+                    if (kwargs == NULL) {
+                        goto error_defer_2;
+                    } else {
+                        Py_INCREF(kwargs);
+                        result = PyObject_Call(bison_proc_cb, args, kwargs);
+                        if(result == NULL) {
+                            goto error_defer_2;
+                        } else {
+                            Py_DECREF(args);
+                            Py_DECREF(bison_proc_cb);
+                            Py_DECREF(kwargs);
+                            Py_INCREF(result);
+                            return result;
+                        }
+                    }
+                }
+                error_defer_2:
+                    Py_DECREF(kwargs);
+                error_defer_1:
+                    Py_DECREF(args);
+                error_defer_0:
+                    printf("bison error occur\n!");
                     Py_INCREF(Py_None);
                     return Py_None;
-                }
-                else {
-                    PyObject *kwargs = PyDict_New();
-                    if (kwargs == NULL) {
-                        //error
-                    } else {
-                        PyObject *result = PyObject_Call(bison_proc_cb, args, kwargs);
-                        if(result == NULL) {
-                            // error
-                        } else {
-                            printf("call bison callback: %s \n ", name);
-                            Py_DECREF(result);
-                        }
-                        Py_DECREF(kwargs);    
-                    }
-                    Py_DECREF(args);
-                 }
-                Py_DECREF(bison_proc_cb);
-               
-                Py_INCREF(Py_None);
-                return Py_None;
             }
             
-            int callback_token_process(char *name, int argc, ...) {
-                printf("callback_token_process %s\n", name);
-                printf("callback_token_process  py_pipeline: %p\n", py_pipeline);
-                PyObject * token_proc_cb = PyObject_GetAttrString(py_pipeline, "token_proc");
-                if(token_proc_cb == NULL) {
-                    // error
-                    printf("token_proc_cb is NULL");
-                    return 0;
+            YYSTYPE callback_token_process(char *name, char *match_token) {
+                printf("callback_token_process %s: (%s)\n", name, match_token);
+                PyObject 
+                    *result = NULL,
+                    *args = NULL,
+                    *kwargs = NULL,
+                    *token_proc_cb = NULL;
+                
+                if (name == NULL || match_token == NULL){
+                    goto error_defer_4;
                 }
-                return 0;
+                args = Py_BuildValue("(s)(s)", name, match_token); 
+                if(args == NULL){ 
+                    goto error_defer_4;
+                }
+                Py_INCREF(args);
+                kwargs = PyDict_New();
+                if(args == NULL){ 
+                    goto error_defer_3;
+                }
+                Py_INCREF(kwargs);
+                token_proc_cb = PyObject_GetAttrString(py_pipeline, "token_proc");
+                if(token_proc_cb == NULL) {
+                    goto error_defer_2;
+                }
+                Py_INCREF(token_proc_cb);
+                result = PyObject_Call(token_proc_cb, args, kwargs);
+                if (result == NULL) {
+                    goto error_defer_1;
+                } else {
+                    Py_INCREF(result);
+                    Py_DECREF(token_proc_cb);
+                    Py_DECREF(kwargs);
+                    Py_DECREF(args);
+                    printf("yylex result P: %p \n", result);
+                    return result;
+                }
+                assert("never shouldn't running to here\n");
+                
+                error_defer_1:
+                    Py_DECREF(token_proc_cb);
+                error_defer_2:
+                    Py_DECREF(kwargs);
+                error_defer_3:
+                    Py_DECREF(args);
+                error_defer_4:
+                    printf("token parse error occur \n");
+                    Py_INCREF(Py_None);
+                    result = Py_None;
+                    return result;
             }
             
             int yy_from_python_input(PyObject *py_pipeline, char *buf, int *read_number, int max_size) {
@@ -306,16 +355,18 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
                     *read_number = 0;
                     return 0;
                 }
+                Py_INCREF(read_callback);
                 PyObject *args = Py_BuildValue("(i)", max_size);  
                 if(args == NULL) {
                     printf("Py_BuildValue Error ");
                     //error
-                }
-                else {
+                } else {
+                    Py_INCREF(args);
                     PyObject *kwargs = PyDict_New();
                     if (kwargs == NULL) {
                         //error
                     } else {
+                        Py_INCREF(kwargs);
                         PyObject *result = PyObject_Call(read_callback, args, kwargs);
                         if(result == NULL) {
                             // error
@@ -347,7 +398,6 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
         // __attribute__ ((dllexport))
         int start_parse(
             PyObject *_pipeline,
-            PyObject *_input_cb,
             ...
         ) {
             printf("\nhello world\n");

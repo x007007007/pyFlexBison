@@ -84,6 +84,7 @@ class Builder(CommandGeneratorBase):
 
         cmds = [
             self.bin_path,
+            '-g',
             '-fPIC',
             '-shared',
             self.flex.output_c,

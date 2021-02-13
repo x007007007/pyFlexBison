@@ -18,7 +18,10 @@ class TokenRule():
         ret_list = []
         if self.token_process is not None:
             ret_list.append(
-                f'callback_token_process("{self.token_process.__name__}", 0);')
+                rf'''
+                    yylval = callback_token_process("{self.token_process.__name__}", yytext); 
+                    printf("\ncallback_token_process out %p \n", yylval);
+                ''')
         if self.token_name != "":
             ret_list.append(f"return {self.token_name};")
         return f"{self.token_r}     {'{'}  {'/* */ '.join(ret_list)}  {'}'}"

@@ -40,7 +40,7 @@ cdef class RunnerBNF:
     cdef char *libHash
     cdef char *libPath
     cdef object lib_path
-    cdef (void)(*start_parse)(object parser, object input_cb)
+    cdef (void)(*start_parse)(object parser)
     cdef char[10000] buffer
 
     def __init__(self, name, parser):
@@ -49,7 +49,7 @@ cdef class RunnerBNF:
         self.config_lib_path(name)
 
     def config_lib_path(self, name):
-        self.lib_path =  f"./build/{name}.so"
+        self.lib_path =  f"/Users/xxc/workspace/ply/python-with-c/build/{name}.so"
         if not os.path.exists(self.lib_path):
             raise RuntimeError("{} not exist".format(self.lib_path))
         self.libPath = PyBytes_AsString(self.lib_path.encode("utf-8"))
@@ -58,6 +58,6 @@ cdef class RunnerBNF:
         self.libHandler = dlfcn.dlopen(self.libPath, dlfcn.RTLD_NOW|dlfcn.RTLD_GLOBAL)
         if self.libHandler == NULL:
             print(dlfcn.dlerror())
-        self.start_parse =  <void (*)(object, object)>dlfcn.dlsym(self.libHandler, "start_parse")
-        self.start_parse(self.parser, self.load_context)
+        self.start_parse =  <void (*)(object)>dlfcn.dlsym(self.libHandler, "start_parse")
+        self.start_parse(self.parser)
 

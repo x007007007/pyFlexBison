@@ -1,6 +1,11 @@
+import io
+import logging
+
 from .core_ import RunnerBNF
 from .builder import Builder
-import io
+
+LOGGER = logging.getLogger(__name__)
+
 
 class PipelineMeta():
 
@@ -28,10 +33,9 @@ class Pipeline(PipelineMeta):
         return self.fp.read(size).encode("utf-8")
 
     def bison_proc(self, name, *args, **kwargs):
-        print(f"bison_proc: {name}")
+        LOGGER.info(f"bison_proc: {name}")
         return getattr(self.yacc, name)(*args, **kwargs)
 
-
     def token_proc(self, name, *args, **kwargs):
-        print(f"token_proc: {name}")
+        LOGGER.info(f"token_proc: {name}")
         return getattr(self.lex, name)(*args, **kwargs)
