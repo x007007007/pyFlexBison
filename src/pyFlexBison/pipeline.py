@@ -1,7 +1,4 @@
-import io
 import logging
-import logging.config
-import time
 
 from .core_ import RunnerBNF
 from .builder import Builder
@@ -17,7 +14,7 @@ class PipelineMeta():
 
 class Pipeline(PipelineMeta):
 
-    def __init__(self, name, lex, yacc):
+    def __init__(self, name, lex, yacc, fp):
         self.name = name
         self.lex = lex
         self.yacc = yacc
@@ -25,7 +22,7 @@ class Pipeline(PipelineMeta):
         self.build.env_checker()
         self.build.clean()
         self.build.build()
-        self.fp = io.StringIO("""1+2/3-4*5\n""")
+        self.fp = fp
         self.runner = RunnerBNF(name, self)
 
     def run(self):
