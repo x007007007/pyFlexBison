@@ -1,5 +1,7 @@
 import io
 import logging
+import logging.config
+import time
 
 from .core_ import RunnerBNF
 from .builder import Builder
@@ -23,7 +25,7 @@ class Pipeline(PipelineMeta):
         self.build.env_checker()
         self.build.clean()
         self.build.build()
-        self.fp = io.StringIO("""1+2/3-4*5""")
+        self.fp = io.StringIO("""1+2/3-4*5\n""")
         self.runner = RunnerBNF(name, self)
 
     def run(self):
@@ -33,9 +35,12 @@ class Pipeline(PipelineMeta):
         return self.fp.read(size).encode("utf-8")
 
     def bison_proc(self, name, *args, **kwargs):
-        LOGGER.info(f"bison_proc: {name}")
-        return getattr(self.yacc, name)(*args, **kwargs)
+        LOGGER.info(f"python print {name} {args}, {kwargs}")
+        res = getattr(self.yacc, name)(*args, **kwargs)
+        return res
 
     def token_proc(self, name, *args, **kwargs):
-        LOGGER.info(f"token_proc: {name}")
-        return getattr(self.lex, name)(*args, **kwargs)
+        LOGGER.info(f"python print {name} {args}, {kwargs}")
+        res = getattr(self.lex, name)(*args, **kwargs)
+
+        return res

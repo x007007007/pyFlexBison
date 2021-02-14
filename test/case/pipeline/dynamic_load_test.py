@@ -2,6 +2,9 @@ import os
 from pyFlexBison.pipeline import Pipeline
 from pyFlexExample.calc.calc_flex import CalcFlexGenerator
 from pyFlexExample.calc.calc_bison import CalcBisonGenerator
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 
 def test_dynamic_load():
@@ -12,7 +15,7 @@ def test_dynamic_load():
     flex.env_checker()
     flex.build()
     pipeline = Pipeline('test', flex, bison)
-    print(pipeline.runner)
+    LOGGER.info(pipeline.runner)
     pipeline.run()
 
 

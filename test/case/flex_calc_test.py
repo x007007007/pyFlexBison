@@ -8,9 +8,7 @@ def test_flex_generator_inherit_token():
         """
     calc_flex = CalcFlexGenerator()
     lex_container = calc_flex.generate_rule()
-    assert lex_container == r"""
-        "+"     {  return ADD;  }
-    """.strip()
+    assert 'return ADD;' in lex_container
 
 
 def test_flex_generator_inherit_method():

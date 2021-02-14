@@ -6,9 +6,10 @@ class CalcBisonGenerator(BisonGenerator):
         calclist:
             | calclist exp EOL {##} 
             ;
-    """, argc=3)
-    def calclist(self, *args, **kwargs):
-        print(args[1])
+    """, args_list=["$2"])
+    def calclist(self, a2, *args, **kwargs):
+        return a2
+
 
     @grammar("""
         exp: term {##} //表达式:=项
@@ -16,16 +17,16 @@ class CalcBisonGenerator(BisonGenerator):
             | exp SUB term {#exp_sub#} //或者，表达式::=表达式-项
             ;
     """, argc=1)
-    def exp_add_sub(self):
-        pass
+    def exp_add_sub(self, a1, *args, **kwargs):
+        return a1
 
     @exp_add_sub.register(argc=3)
-    def exp_add(self):
-        pass
+    def exp_add(selfa1, a1, a2, a3, *args, **kwargs):
+        return a1 + a3
 
     @exp_add_sub.register(argc=3)
-    def exp_sub(self):
-        pass
+    def exp_sub(self, a1, a2, a3, *args, **kwargs):
+        return a1 - a3
 
     @grammar("""
         term: factor {##} //项::=因子

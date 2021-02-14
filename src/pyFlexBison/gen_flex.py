@@ -19,11 +19,22 @@ class TokenRule():
         if self.token_process is not None:
             ret_list.append(
                 rf'''
-                    yylval = callback_token_process("{self.token_process.__name__}", yytext); 
-                    printf("\ncallback_token_process out %p \n", yylval);
+                    PyObject *x = (PyObject *)callback_token_process("{self.token_process.__name__}", yytext);
+                    printf("wtf: %p \n", x);
+                    yylval = x + 0x10000000;
+                    printf("\n callback_token_process out %p \n", yylval);
+                ''')
+        else:
+            ret_list.append(
+                rf'''
+                    yylval = (PyObject *)PyUnicode_FromString(yytext);
+                    Py_INCREF(yylval);
+                    printf("---lex token %p\n", yylval);
+                    print_py_obj(yylval);
+                    printf("---lex token done%p\n", yylval);
                 ''')
         if self.token_name != "":
-            ret_list.append(f"return {self.token_name};")
+            ret_list.append(rf"return {self.token_name};")
         return f"{self.token_r}     {'{'}  {'/* */ '.join(ret_list)}  {'}'}"
 
     def bind(self, method):
