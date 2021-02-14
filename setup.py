@@ -3,6 +3,7 @@ import re
 import sys
 import fnmatch
 from os.path import join
+from distutils import sysconfig
 from setuptools import find_packages, setup
 
 try:
@@ -30,6 +31,8 @@ def generate_extension():
         # extra_compile_args.append('-DCYTHON_TRACE=1')
     elif sys.platform.startswith('darwin'):
         # libs.append('dl')
+        cfg = sysconfig.get_config_vars()
+        cfg['LDSHARED'] = cfg['LDSHARED'].replace('-bundle', '-dynamiclib')
         pass
     else:
         print('Sorry, your platform is not supported.')
@@ -38,7 +41,7 @@ def generate_extension():
         'src/pyFlexBison/cython/core.pyx',
     ]
     return Extension(
-        'pyFlexBison.core_',
+        'pyFlexBison.libcore_',
         sources=SOURCES,
         extra_compile_args=extra_compile_args,
         libraries=libs,

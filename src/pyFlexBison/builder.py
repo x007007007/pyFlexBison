@@ -91,10 +91,13 @@ class Builder(CommandGeneratorBase):
             self.bison.output_c,
             *[f"-I{i}" for i in self.include_dirs],
             *[f"-L{i}" for i in self.libraries],
+            f'-L{os.path.abspath(os.path.dirname(__file__))}',
             '-lpython3.8',
+            '-lcore_.cpython-38-darwin',
             '-o',
             self.output
         ]
+        print(cmds)
         proc = self.run_cmd(cmds, env=self.flex.run_env)
         out, err = proc.communicate()
         print(f"error code: {proc.returncode} \n"

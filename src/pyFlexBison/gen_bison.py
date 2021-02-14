@@ -195,7 +195,7 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
             #define PY_SSIZE_T_CLEAN
             #include "Python.h"
             #define YYSTYPE PyObject *
-
+            extern void print_py_obj(PyObject *);
         }
         
         %code requires {
@@ -211,8 +211,10 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
             #include "Python.h"
             #define YYSTYPE PyObject *
             
+            
+            
             int yy_from_python_input(PyObject * pipeline, char * buf,int * result_len, int max_size);
-            void print_py_obj(PyObject *obj);
+            
             PyObject *py_pipeline;
             #define YY_INPUT(buf, result, max_size) { \
                 yy_from_python_input(py_pipeline, buf, &result, max_size); \
@@ -234,25 +236,6 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
                 *bison_proc_cb = NULL,
                 *token_proc_cb = NULL,
                 *read_callback = NULL;
-                
-            void print_py_obj(PyObject *obj) {
-                Py_INCREF(obj);
-                PyObject* obj_repr = PyObject_Repr(obj);
-                if (obj_repr != NULL){
-                    Py_INCREF(obj_repr);
-                    PyObject * temp_bytes = PyUnicode_AsEncodedString(obj_repr, "UTF-8", "strict");
-                    if (temp_bytes != NULL) {
-                        Py_INCREF(temp_bytes);
-                        char *obj_repr_c_str = PyBytes_AS_STRING(temp_bytes);
-                        printf("py obj: %s\n", obj_repr_c_str);
-                        Py_DECREF(temp_bytes);
-                    } else {
-                        // TODO: Handle encoding error.
-                    }
-                    Py_DECREF(obj_repr);
-                }
-                Py_DECREF(obj);
-            }
             
             YYSTYPE bison_callback(char *name, int argc, ...) {
                 va_list ap;

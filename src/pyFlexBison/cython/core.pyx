@@ -1,3 +1,5 @@
+#cython: language_level=3
+
 cdef extern from "Python.h":
     object PyBytes_FromString(char *)
     object PyUnicode_FromString(char *)
@@ -61,4 +63,5 @@ cdef class RunnerBNF:
             print(dlfcn.dlerror())
         self.start_parse =  <void (*)(object)>dlfcn.dlsym(self.libHandler, "start_parse")
         self.start_parse(self.parser)
+
 

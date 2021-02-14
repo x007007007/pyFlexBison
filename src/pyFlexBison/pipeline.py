@@ -1,6 +1,5 @@
 import logging
-
-from .core_ import RunnerBNF
+from pyFlexBison.libcore_ import RunnerBNF
 from .builder import Builder
 
 LOGGER = logging.getLogger(__name__)
@@ -41,3 +40,7 @@ class Pipeline(PipelineMeta):
         res = getattr(self.lex, name)(*args, **kwargs)
 
         return res
+
+    def on_process_done(self):
+
+        print("on_process_done")
