@@ -29,6 +29,7 @@ cdef extern from "string.h":
 import os
 cimport dlfcn
 
+include "print_py_obj.pyx"
 
 cdef class RunnerBNF:
     cdef object parser
