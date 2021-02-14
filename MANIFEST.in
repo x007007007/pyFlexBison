@@ -1,0 +1,4 @@
+global-include src/pyFlexBison/cython/*.pyx
+global-include src/pyFlexBison/cython/*.pxd
+global-include src/pyFlexExample/**/*.py
+global-include test/**/*.py

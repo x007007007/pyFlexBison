@@ -53,7 +53,7 @@ packages = find_packages(where="src")
 packages = [i for i in packages if not i.startswith("pyFlexExample")]
 
 setup(
-    name='pyLALR1',
+    name='pyFlexBison',
     description='',
     # author=find_meta("author"),
     # maintainer=find_meta("maintainer"),
@@ -64,7 +64,7 @@ setup(
     # long_description=read("README.md"),
     long_description_content_type="text/markdown",
     packages=packages,
-    package_data={'pyLALR1': []},
+    package_data={'pyFlexBison': []},
     package_dir={
         "": "src",
     },
