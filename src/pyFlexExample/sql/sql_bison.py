@@ -1,54 +1,40 @@
 from pyFlexBison.gen_bison import BisonGenerator, grammar
-
+from .node import SQLNode
 
 class SqlBisonGenerator(BisonGenerator):
+    """
+    https://github.com/wclever/NdYaccLexTool/blob/master/progs/sql2.y
+    """
     @grammar("""
-        calclist:
-            | calclist exp EOL {##} 
-            ;
-    """, args_list=["$2"])
-    def calclist(self, a2, *args, **kwargs):
-        return a2
-
-
-    @grammar("""
-        exp: term {##} //表达式:=项
-            | exp ADD term {#exp_add#} //或者，表达式::=表达式+项
-            | exp SUB term {#exp_sub#} //或者，表达式::=表达式-项
+        sql_block_list: sql_block {##}
+            |   sql_list {##}
+            |   sql_block_list sql_block  {#gen_sql_block_list#}
+            |   sql_block_list sql_list   {#gen_sql_block_list#}
+            
+        sql_block: DELIMITER_START sql_list DELIMITER_END {#gen_sql_block#}
+        
+        sql_list:
+                sql ';'	{#gen_signal_sql#}
+            |	sql_list sql ';' {#gen_sql_list#}
             ;
     """, argc=1)
-    def exp_add_sub(self, a1, *args, **kwargs):
-        return a1
+    def sql_block_list(self, signal_sql):
+        return [signal_sql]
 
-    @exp_add_sub.register(argc=3)
-    def exp_add(selfa1, a1, a2, a3, *args, **kwargs):
-        return a1 + a3
+    @sql_block_list.register(argc=2)
+    def gen_sql_block_list(self, sql_list, sql):
+        sql_list.append(sql)
+        return sql_list
 
-    @exp_add_sub.register(argc=3)
-    def exp_sub(self, a1, a2, a3, *args, **kwargs):
-        return a1 - a3
+    @sql_block_list.register(args_list=['$1', '$2'])
+    def gen_sql_block(self, delimiter, block):
+        return block
 
-    @grammar("""
-        term: factor {##} //项::=因子
-            | term MUL factor {#term_mul_factor#} //或者，项::=项*因子
-            | term DIV factor {#term_div_factor#} //或者，项::=项/因子
-            ;
-        factor: NUMBER {##} //因子::=数字
-            | ABS factor {#abs_factor#} //或者，因子::=绝对值.因子
-            ;
-    """, argc=1)
-    def term_and_factor(self, a1):
-        print("this is python code")
-        return a1
+    @sql_block_list.register(argc=1)
+    def gen_signal_sql(self, sql):
+        return sql
 
-    @term_and_factor.register(argc=3)
-    def term_mul_factor(self, a1, a2, a3):
-        return a1 * a3
-
-    @term_and_factor.register(argc=3)
-    def term_div_factor(self, a1, a2, a3):
-        return a1 / a3
-
-    @term_and_factor.register(argc=2)
-    def abs_factor(self, a1, a2):
-        return abs(a2)
+    @sql_block_list.register(argc=2)
+    def gen_sql_list(self, sql_list, sql):
+        sql_list.append(sql)
+        return sql_list

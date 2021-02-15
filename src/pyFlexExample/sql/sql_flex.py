@@ -90,106 +90,105 @@ class SqlFlexGenerator(FlexGenerator):
                                     error("unexpect status")
                             }
                         }
-        EXEC[ \t]+SQL    { BEGIN SQL; start_save(); }
-        <SQL>ALL                   :=:      ALL
-        <SQL>AND                   :=:      AND
-        <SQL>AVG                   :=:      AMMSC
-        <SQL>MIN                   :=:      AMMSC
-        <SQL>MAX                   :=:      AMMSC
-        <SQL>SUM                   :=:      AMMSC
-        <SQL>COUNT                   :=:      AMMSC
-        <SQL>ANY                   :=:      ANY
-        <SQL>AS                       :=:      AS
-        <SQL>ASC                   :=:      ASC
-        <SQL>AUTHORIZATION           :=:      AUTHORIZATION
-        <SQL>BETWEEN               :=:      BETWEEN
-        <SQL>BY                       :=:      BY
-        <SQL>CHAR(ACTER)?           :=:      CHARACTER
-        <SQL>CHECK                   :=:      CHECK
-        <SQL>CLOSE                   :=:      CLOSE
-        <SQL>COMMIT                   :=:      COMMIT
-        <SQL>CONTINUE               :=:      CONTINUE
-        <SQL>CREATE                   :=:      CREATE
-        <SQL>CURRENT               :=:      CURRENT
-        <SQL>CURSOR                   :=:      CURSOR
-        <SQL>DECIMAL               :=:      DECIMAL
-        <SQL>DECLARE               :=:      DECLARE
-        <SQL>DEFAULT               :=:      DEFAULT
-        <SQL>DELETE                   :=:      DELETE
-        <SQL>DESC                   :=:      DESC
-        <SQL>DISTINCT               :=:      DISTINCT
-        <SQL>DOUBLE                   :=:      DOUBLE
-        <SQL>ESCAPE                   :=:      ESCAPE
-        <SQL>EXISTS                   :=:      EXISTS
-        <SQL>FETCH                   :=:      FETCH
-        <SQL>FLOAT                   :=:      FLOAT
-        <SQL>FOR                   :=:      FOR
-        <SQL>FOREIGN               :=:      FOREIGN
-        <SQL>FOUND                   :=:      FOUND
-        <SQL>FROM                   :=:      FROM
-        <SQL>GO[ \t]*TO               :=:      GOTO
-        <SQL>GRANT                   :=:      GRANT
-        <SQL>GROUP                   :=:      GROUP
-        <SQL>HAVING                   :=:      HAVING
-        <SQL>IN                       :=:      IN
-        <SQL>INDICATOR               :=:      INDICATOR
-        <SQL>INSERT                   :=:      INSERT
-        <SQL>INT(EGER)?               :=:      INTEGER
-        <SQL>INTO                   :=:      INTO
-        <SQL>IS                       :=:      IS
-        <SQL>KEY                   :=:      KEY
-        <SQL>LANGUAGE               :=:      LANGUAGE
-        <SQL>LIKE                   :=:      LIKE
-        <SQL>NOT                   :=:      NOT
-        <SQL>NULL                   :=:      NULLX
-        <SQL>NUMERIC               :=:      NUMERIC
-        <SQL>OF                       :=:      OF
-        <SQL>ON                       :=:      ON
-        <SQL>OPEN                   :=:      OPEN
-        <SQL>OPTION                   :=:      OPTION
-        <SQL>OR                       :=:      OR
-        <SQL>ORDER                   :=:      ORDER
-        <SQL>PRECISION               :=:      PRECISION
-        <SQL>PRIMARY               :=:      PRIMARY
-        <SQL>PRIVILEGES               :=:      PRIVILEGES
-        <SQL>PROCEDURE               :=:      PROCEDURE
-        <SQL>PUBLIC                   :=:      PUBLIC
-        <SQL>REAL                   :=:      REAL
-        <SQL>REFERENCES               :=:      REFERENCES
-        <SQL>ROLLBACK               :=:      ROLLBACK
-        <SQL>SCHEMA                   :=:      SCHEMA
-        <SQL>SELECT                   :=:      SELECT
-        <SQL>SET                   :=:      SET
-        <SQL>SMALLINT               :=:      SMALLINT
-        <SQL>SOME                   :=:      SOME
-        <SQL>SQLCODE               :=:      SQLCODE
-        <SQL>TABLE                   :=:      TABLE
-        <SQL>TO                       :=:      TO
-        <SQL>UNION                   :=:      UNION
-        <SQL>UNIQUE                   :=:      UNIQUE
-        <SQL>UPDATE                   :=:      UPDATE
-        <SQL>USER                   :=:      USER
-        <SQL>VALUES                   :=:      VALUES
-        <SQL>VIEW                   :=:      VIEW
-        <SQL>WHENEVER               :=:      WHENEVER
-        <SQL>WHERE                   :=:      WHERE
-        <SQL>WITH                   :=:      WITH
-        <SQL>WORK                   :=:      WORK
+        EXEC[ \t]+SQL                           { BEGIN SQL; start_save(); }
+        <SQL>ALL                        :=:     ALL
+        <SQL>AND                        :=:     AND
+        <SQL>AVG                        :=:     AMMSC
+        <SQL>MIN                        :=:     AMMSC
+        <SQL>MAX                        :=:     AMMSC
+        <SQL>SUM                        :=:     AMMSC
+        <SQL>COUNT                      :=:     AMMSC
+        <SQL>ANY                        :=:     ANY
+        <SQL>AS                         :=:     AS
+        <SQL>ASC                        :=:     ASC
+        <SQL>AUTHORIZATION              :=:     AUTHORIZATION
+        <SQL>BETWEEN                    :=:     BETWEEN
+        <SQL>BY                         :=:     BY
+        <SQL>CHAR(ACTER)?               :=:     CHARACTER
+        <SQL>CHECK                      :=:     CHECK
+        <SQL>CLOSE                      :=:     CLOSE
+        <SQL>COMMIT                     :=:     COMMIT
+        <SQL>CONTINUE                   :=:     CONTINUE
+        <SQL>CREATE                     :=:     CREATE
+        <SQL>CURRENT                    :=:     CURRENT
+        <SQL>CURSOR                     :=:     CURSOR
+        <SQL>DECIMAL                    :=:     DECIMAL
+        <SQL>DECLARE                    :=:     DECLARE
+        <SQL>DEFAULT                    :=:     DEFAULT
+        <SQL>DELETE                     :=:     DELETE
+        <SQL>DESC                       :=:     DESC
+        <SQL>DISTINCT                   :=:     DISTINCT
+        <SQL>DOUBLE                     :=:     DOUBLE
+        <SQL>ESCAPE                     :=:     ESCAPE
+        <SQL>EXISTS                     :=:     EXISTS
+        <SQL>FETCH                      :=:     FETCH
+        <SQL>FLOAT                      :=:     FLOAT
+        <SQL>FOR                        :=:     FOR
+        <SQL>FOREIGN                    :=:     FOREIGN
+        <SQL>FOUND                      :=:     FOUND
+        <SQL>FROM                       :=:     FROM
+        <SQL>GO[ \t]*TO                 :=:     GOTO
+        <SQL>GRANT                      :=:     GRANT
+        <SQL>GROUP                      :=:     GROUP
+        <SQL>HAVING                     :=:     HAVING
+        <SQL>IN                         :=:     IN
+        <SQL>INDICATOR                  :=:     INDICATOR
+        <SQL>INSERT                     :=:     INSERT
+        <SQL>INT(EGER)?                 :=:     INTEGER
+        <SQL>INTO                       :=:     INTO
+        <SQL>IS                         :=:     IS
+        <SQL>KEY                        :=:     KEY
+        <SQL>LANGUAGE                   :=:     LANGUAGE
+        <SQL>LIKE                       :=:     LIKE
+        <SQL>NOT                        :=:     NOT
+        <SQL>NULL                       :=:     NULLX
+        <SQL>NUMERIC                    :=:     NUMERIC
+        <SQL>OF                         :=:     OF
+        <SQL>ON                         :=:     ON
+        <SQL>OPEN                       :=:     OPEN
+        <SQL>OPTION                     :=:     OPTION
+        <SQL>OR                         :=:     OR
+        <SQL>ORDER                      :=:     ORDER
+        <SQL>PRECISION                  :=:     PRECISION
+        <SQL>PRIMARY                    :=:     PRIMARY
+        <SQL>PRIVILEGES                 :=:     PRIVILEGES
+        <SQL>PROCEDURE                  :=:     PROCEDURE
+        <SQL>PUBLIC                     :=:     PUBLIC
+        <SQL>REAL                       :=:     REAL
+        <SQL>REFERENCES                 :=:     REFERENCES
+        <SQL>ROLLBACK                   :=:     ROLLBACK
+        <SQL>SCHEMA                     :=:     SCHEMA
+        <SQL>SELECT                     :=:     SELECT
+        <SQL>SET                        :=:     SET
+        <SQL>SMALLINT                   :=:     SMALLINT
+        <SQL>SOME                       :=:     SOME
+        <SQL>SQLCODE                    :=:     SQLCODE
+        <SQL>TABLE                      :=:     TABLE
+        <SQL>TO                         :=:     TO
+        <SQL>UNION                      :=:     UNION
+        <SQL>UNIQUE                     :=:     UNIQUE
+        <SQL>UPDATE                     :=:     UPDATE
+        <SQL>USER                       :=:     USER
+        <SQL>VALUES                     :=:     VALUES
+        <SQL>VIEW                       :=:     VIEW
+        <SQL>WHENEVER                   :=:     WHENEVER
+        <SQL>WHERE                      :=:     WHERE
+        <SQL>WITH                       :=:     WITH
+        <SQL>WORK                       :=:     WORK
         
             /* punctuation */
         
         <SQL>"="    |
-        <SQL>"<>"     |
+        <SQL>"<>"   |
         <SQL>"<"    |
         <SQL>">"    |
-        <SQL>"<="    |
-        <SQL>">="                   :=:      COMPARISON
+        <SQL>"<="   |
+        <SQL>">="                       :=: COMPARISON
         
-        <SQL>[-+*/(),.;]           :=:      yytext[0]
-        
+        <SQL>[-+*/(),.;]                :=: yytext[0]
         
             /* names */
-        <SQL>[A-Za-z][A-Za-z0-9_]*      :=:   NAME
+        <SQL>[A-Za-z][A-Za-z0-9_]*      :=: NAME
         
             /* parameters */
         <SQL>":"[A-Za-z][A-Za-z0-9_]*    {
@@ -199,13 +198,13 @@ class SqlFlexGenerator(FlexGenerator):
         
             /* numbers */
         
-        <SQL>[0-9]+    |
-        <SQL>[0-9]+"."[0-9]* |
-        <SQL>"."[0-9]*                                    :=:     INTNUM
+        <SQL>[0-9]+             |
+        <SQL>[0-9]+"."[0-9]*    |
+        <SQL>"."[0-9]*                                      :=:     INTNUM
         
         <SQL>[0-9]+[eE][+-]?[0-9]+    |
         <SQL>[0-9]+"."[0-9]*[eE][+-]?[0-9]+ |
-        <SQL>"."[0-9]*[eE][+-]?[0-9]+                    :=:     APPROXNUM
+        <SQL>"."[0-9]*[eE][+-]?[0-9]+                       :=:     APPROXNUM
         
             /* strings */
         
@@ -219,16 +218,16 @@ class SqlFlexGenerator(FlexGenerator):
                     yymore();
             }
                 
-        <SQL>'[^'\n]*$            {    yyerror("Unterminated string"); }
+        <SQL>'[^'\n]*$                          { yyerror("Unterminated string"); }
         
-        <SQL>\n                    { save_str(" ");lineno++; }
-        \n                        { lineno++; ECHO; }
+        <SQL>\n                                 { save_str(" ");lineno++; }
+        \n                                      { lineno++; ECHO; }
         
-        <SQL>[ \t\r]+            save_str(" ");    /* white space */
+        <SQL>[ \t\r]+                           save_str(" ");    /* white space */
         
-        <SQL>"--".*    ;            /* comment */
+        <SQL>"--".*                             ;            /* comment */
         
-        .        ECHO;            /* random non-SQL text */
+        .                                   ECHO;            /* random non-SQL text */
     """)
 
     def t_number(self, token: str) -> int:
