@@ -22,6 +22,7 @@ class Pipeline(PipelineMeta):
         assert issubclass(yacc_cls, BisonGenerator)
         self.name = name
         self.build_folder = f"./build/{name}/"
+        self.lib_path = os.path.join(self.build_folder, f"{name}.so")
         self.lex_kwargs = lex_kwargs or {}
         self.yacc_kwargs = yacc_kwargs or {}
         self.yacc = yacc_cls(**self.yacc_kwargs)
@@ -35,10 +36,12 @@ class Pipeline(PipelineMeta):
 
         self.build = Builder(self.name, self.lex, self.yacc)
         self.build.env_checker()
+        self.build.set_build_path(self.build_folder)
         self.build.clean()
         self.build.build()
+        self.lib_path = self.build.output
         self.fp = fp
-        self.runner = RunnerBNF(name, self)
+        self.runner = RunnerBNF(name, self, self.lib_path)
 
     def run(self):
         self.runner.dynamic_load()

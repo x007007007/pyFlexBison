@@ -13,7 +13,7 @@ def test_dynamic_load():
 1 + 2 + 3 + 4
 9 * 7 - 9 + 1
     """)
-    pipeline = Pipeline('test', CalcFlexGenerator, CalcBisonGenerator, fp)
+    pipeline = Pipeline('test_calc', CalcFlexGenerator, CalcBisonGenerator, fp)
     LOGGER.info(pipeline.runner)
     pipeline.run()
 
