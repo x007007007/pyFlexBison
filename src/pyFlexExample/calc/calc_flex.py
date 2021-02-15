@@ -3,7 +3,7 @@ from pyFlexBison.gen_flex import FlexGenerator
 
 
 class CalcFlexGenerator(FlexGenerator):
-    token_rule = r"""
+    token_rule = FlexGenerator.trim_rules_string(r"""
         "+"     = ADD
         "-"     = SUB
         "*"     = MUL
@@ -12,7 +12,7 @@ class CalcFlexGenerator(FlexGenerator):
         [0-9]+  = NUMBER
         \n      = EOL
         [ \t]   = 
-    """
+    """)
 
     def t_number(self, token: str) -> int:
         return int(token)

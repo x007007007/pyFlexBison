@@ -79,26 +79,38 @@ class FlexGenerator(
     CommandGeneratorBase
 ):
     token_rule: str = None
+    token_rule_split = '='
+    ext_function: str = ''
+    ext_config: str = ''
 
     def __init__(self, bison_header: str=None, *args, **kwargs):
         super(FlexGenerator, self).__init__(*args, **kwargs)
         self.bison_header = "bison.h" if bison_header is None else bison_header
         self.tokens = []
+        self.rules = []
         if self.token_rule is not None:
             self._analysis_rule()
 
     def _analysis_rule(self):
         for line in self.token_rule.split("\n"):
-            if (line := line.strip()) == "": continue
-            rule_string, token_name = line.split("=")
-            rule_string, token_name = rule_string.strip(), token_name.strip()
-            rule = TokenRule(rule_string, token_name)
-            if rule_method := getattr(self, f't_{token_name.lower()}', None):
-                rule.bind(rule_method)
-            self.tokens.append(rule)
+            if line == "": continue
+            sep_rule = line.split(self.token_rule_split)
+            sep_rule_len = len(sep_rule)
+            if sep_rule_len == 2:
+                rule_string, token_name = sep_rule
+                rule_string, token_name = rule_string.rstrip(), token_name.lstrip()
+                rule = TokenRule(rule_string, token_name)
+                if rule_method := getattr(self, f't_{token_name.lower()}', None):
+                    rule.bind(rule_method)
+                self.tokens.append(rule)
+                self.rules.append(rule)
+            elif sep_rule_len == 1:
+                self.rules.append(line)
+            else:
+                raise SyntaxError(f"token_rule_split:{self.token_rule_split} split too much!!")
 
     def generate_rule(self) -> str:
-        return "\n".join((str(i) for i in self.tokens))
+        return "\n".join((str(i) for i in self.rules))
 
     def generate(self) -> str:
         template = Template(self.trim_rules_string(r"""
@@ -106,16 +118,21 @@ class FlexGenerator(
             #include "$header_name"
             int yywrap() { return(1); }
         %}
-                
+        
+        $ext_config
+        
         %%
         $rules
         .       { printf("Mystery charactor %c\n", *yytext); } 
         %%
         
+        $ext_function
         """))
         return template.substitute(
             rules=self.generate_rule(),
-            header_name=self.bison_header
+            header_name=self.bison_header,
+            ext_function=self.ext_function,
+            ext_config=self.ext_config,
         )
 
     def get_flex_path(self):
@@ -138,4 +155,7 @@ class FlexGenerator(
         out, err = proc.communicate()
         if proc.returncode == 0:
             self.output_c = output_c
-        print(f"error code: {proc.returncode} \n {out} {err}")
+        else:
+            print(f"error code: {proc.returncode} \n {out} {err}")
+            raise RuntimeError("build failed")
+

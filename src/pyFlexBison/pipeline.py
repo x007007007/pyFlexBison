@@ -1,6 +1,9 @@
+import os
 import logging
 from pyFlexBison.libcore_ import RunnerBNF
 from .builder import Builder
+from .gen_bison import BisonGenerator
+from .gen_flex import FlexGenerator
 
 LOGGER = logging.getLogger(__name__)
 
@@ -12,11 +15,24 @@ class PipelineMeta():
 
 
 class Pipeline(PipelineMeta):
-
-    def __init__(self, name, lex, yacc, fp):
+    lex: FlexGenerator
+    yacc: BisonGenerator
+    def __init__(self, name, lex_cls, yacc_cls, fp, lex_kwargs=None, yacc_kwargs=None):
+        assert issubclass(lex_cls, FlexGenerator)
+        assert issubclass(yacc_cls, BisonGenerator)
         self.name = name
-        self.lex = lex
-        self.yacc = yacc
+        self.build_folder = f"./build/{name}/"
+        self.lex_kwargs = lex_kwargs or {}
+        self.yacc_kwargs = yacc_kwargs or {}
+        self.yacc = yacc_cls(**self.yacc_kwargs)
+        self.yacc.env_checker()
+        self.yacc.set_build_path(self.build_folder)
+        self.yacc.build()
+        self.lex = lex_cls(bison_header=os.path.basename(self.yacc.output_h))
+        self.lex.env_checker()
+        self.lex.set_build_path(self.build_folder)
+        self.lex.build()
+
         self.build = Builder(self.name, self.lex, self.yacc)
         self.build.env_checker()
         self.build.clean()
