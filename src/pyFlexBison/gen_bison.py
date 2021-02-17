@@ -421,29 +421,29 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
             ...
         ) {
             py_pipeline = _pipeline;
-            PyObject *done_callback = PyObject_GetAttrString(py_pipeline, "done");
+            // PyObject *done_callback = PyObject_GetAttrString(py_pipeline, "done");
             bison_proc_cb = PyObject_GetAttrString(py_pipeline, "bison_proc");
             token_proc_cb = PyObject_GetAttrString(py_pipeline, "token_proc");
             read_callback = PyObject_GetAttrString(py_pipeline, "read_context");
             Py_INCREF(bison_proc_cb);
             Py_INCREF(token_proc_cb);
             Py_INCREF(read_callback);
-            Py_INCREF(done_callback);
+            // Py_INCREF(done_callback);
             print_py_obj(bison_proc_cb);
             print_py_obj(token_proc_cb);
             print_py_obj(read_callback);
             yyparse();
-            
-                PyObject *args = PyTuple_New(0);
-                PyObject *kwargs = PyDict_New();
-                Py_INCREF(args); Py_INCREF(kwargs);
-                PyObject_Call(done_callback, args, kwargs);
-                Py_DECREF(args); Py_DECREF(kwargs);
-                
+                // if (done_callback != NULL) {
+                //     PyObject *args = PyTuple_New(0);
+                //     PyObject *kwargs = PyDict_New();
+                //     Py_INCREF(args); Py_INCREF(kwargs);
+                //     PyObject_Call(done_callback, args, kwargs);
+                //     Py_DECREF(args); Py_DECREF(kwargs);
+                // }
             Py_DECREF(bison_proc_cb);
             Py_DECREF(token_proc_cb);
             Py_DECREF(read_callback);
-            Py_DECREF(done_callback);
+            // Py_DECREF(done_callback);
             return 0;
         }
         

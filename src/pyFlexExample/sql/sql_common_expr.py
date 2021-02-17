@@ -14,16 +14,16 @@ class SqlCommonExpr():
         ;
         
         expr:
-              expr or expr %prec OR_SYM             {#expr_or#}
-            | expr XOR expr %prec XOR               {#expr_xor#}
-            | expr and expr %prec AND_SYM           {#expr_and#}
-            | NOT_SYM expr %prec NOT_SYM            {#expr_not#}
-            | bool_pri IS TRUE_SYM %prec IS         {#expr_is_true#}
-            | bool_pri IS not TRUE_SYM %prec IS     {#expr_is_not_true#}
-            | bool_pri IS FALSE_SYM %prec IS        {#expr_is_false#}
-            | bool_pri IS not FALSE_SYM %prec IS    {#expr_is_not_false#}
-            | bool_pri IS UNKNOWN_SYM %prec IS      {#expr_is_unknown#}
-            | bool_pri IS not UNKNOWN_SYM %prec IS  {#expr_is_not_unknown#}
+              expr or expr %prec OR_SYM             {#expr_bool#}
+            | expr XOR expr %prec XOR               {#expr_bool#}
+            | expr and expr %prec AND_SYM           {#expr_bool#}
+            | NOT_SYM expr %prec NOT_SYM            {#expr_bool#}
+            | bool_pri IS TRUE_SYM %prec IS         {#expr_is_bool#}
+            | bool_pri IS not TRUE_SYM %prec IS     {#expr_is_not_bool#}
+            | bool_pri IS FALSE_SYM %prec IS        {#expr_is_bool#}
+            | bool_pri IS not FALSE_SYM %prec IS    {#expr_is_not_bool#}
+            | bool_pri IS UNKNOWN_SYM %prec IS      {#expr_is_bool#}
+            | bool_pri IS not UNKNOWN_SYM %prec IS  {#expr_is_not_bool#}
             | bool_pri %prec SET_VAR 
             ;
 
@@ -41,4 +41,20 @@ class SqlCommonExpr():
 
     @copt_expr_list.register()
     def copt_expr_list(self):
+        pass
+
+    @copt_expr_list.register()
+    def expr_bool(self):
+        pass
+
+    @copt_expr_list.register()
+    def expr_bool(self):
+        pass
+
+    @copt_expr_list.register()
+    def expr_is_bool(self):
+        pass
+
+    @copt_expr_list.register()
+    def expr_is_not_bool(self):
         pass

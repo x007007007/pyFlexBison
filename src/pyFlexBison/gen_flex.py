@@ -22,7 +22,7 @@ class TokenRule():
                     PyObject *x = (PyObject *)callback_token_process("{self.token_process.__name__}", yytext);
                     printf("wtf: %p \n", x);
                     yylval = x + 0x10000000;
-                    printf("\n callback_token_process out %p \n", yylval);
+                    // printf("\n callback_token_process out %p \n", yylval);
                 ''')
         else:
             ret_list.append(

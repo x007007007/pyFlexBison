@@ -15,4 +15,10 @@ class SqlCallStmt():
     def call_stmt(self):
         return None
 
-    
+    @call_stmt.registor()
+    def opt_paren_expr_list_empty(self):
+        pass
+
+    @call_stmt.registor()
+    def opt_paren_expr_list(self):
+        pass

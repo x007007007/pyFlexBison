@@ -77,7 +77,7 @@ class SqlFlexGenerator(FlexGenerator):
     token_rule = FlexGenerator.trim_rules_string(r"""
         DELIMITER[\t ]+.*[\t\n ]   { update_delimiter_str(yytext);}
         .              {
-                            switch(delimiter_end_checker(yytext){
+                            switch(delimiter_end_checker(yytext)){
                                 case -1:
                                     REJECT;
                                     break;
