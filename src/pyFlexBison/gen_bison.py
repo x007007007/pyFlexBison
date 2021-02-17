@@ -41,7 +41,7 @@ class GrammarRegister:
 
     def analysis_rules(self):
         self.callback_name_set = set()
-        res = re.findall(r"\s([A-Z_]+)\s", self.rule_string, re.M | re.S)
+        res = re.findall(r"(?<=\s)([A-Z_]+)(?:\s)", self.rule_string, re.M | re.S)
         self.__tokens = set(res)
         self.callback_replace = dict()
         for name_replace_hold in re.findall(r"{#\w*?#}", self.rule_string, re.M | re.S):
