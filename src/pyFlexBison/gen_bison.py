@@ -245,11 +245,11 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
                     *handle = NULL,
                     *kwargs = NULL,
                     *result = NULL;
-                printf("entry bison_callback %s \n", name);
+                // printf("entry bison_callback %s \n", name);
                 
                 args = PyTuple_New(argc + 1);
                 if(args == NULL) {
-                    printf("Py_BuildValue Error \n");
+                    // printf("Py_BuildValue Error \n");
                     goto error_defer_0;
                 } else {
                     Py_INCREF(args);
@@ -265,28 +265,28 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
                         if(handle == NULL){
                             handle = Py_None;
                         }
-                        printf("va_push %d : %p\n", i + 1, handle);
+                        // printf("va_push %d : %p\n", i + 1, handle);
                         Py_INCREF(handle);
-                        print_py_obj(handle);
+                        // print_py_obj(handle);
                         PyTuple_SET_ITEM(args, i + 1, handle);
                     }
                     va_end(ap);
-                    print_py_obj(args);
+                    // print_py_obj(args);
                     // ------------------------------------------------
-                    printf("273 bison_callback %s\n", name);
+                    // printf("273 bison_callback %s\n", name);
                     if(bison_proc_cb == NULL) {
-                        printf("Error bison_proc is NULL\n");
-                        print_py_obj(py_pipeline);
+                        // printf("Error bison_proc is NULL\n");
+                        // print_py_obj(py_pipeline);
                         goto error_defer_1;
                     }
                     kwargs = PyDict_New();
                     if (kwargs == NULL) {
-                        printf("kwargs allow failed\n");
+                        // printf("kwargs allow failed\n");
                         goto error_defer_2;
                     } else {
                         Py_INCREF(kwargs);
-                        print_py_obj(args);
-                        print_py_obj(kwargs);
+                        // print_py_obj(args);
+                        // print_py_obj(kwargs);
                         result = PyObject_Call(bison_proc_cb, args, kwargs);
                         if(result == NULL) {
                             goto error_defer_2;
@@ -294,11 +294,10 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
                             Py_INCREF(result);
                             Py_DECREF(args);
                             Py_DECREF(kwargs);
-                            printf("--{bison_callback ret result addr: %p\n", result);
-                            print_py_obj(result);
-                            printf("--}%p\n", result);
-                            return result;
-                            
+                            // printf("--{bison_callback ret result addr: %p\n", result);
+                            // print_py_obj(result);
+                            // printf("--}%p\n", result);
+                            return result;           
                         }
                     }
                 }
@@ -377,30 +376,34 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
                 PyObject *args = Py_BuildValue("(i)", max_size);  
                 if(args == NULL) {
                     printf("Py_BuildValue Error ");
+                    return 0;
                     //error
                 } else {
                     Py_INCREF(args);
                     PyObject *kwargs = PyDict_New();
                     if (kwargs == NULL) {
                         //error
+                        return 0;
                     } else {
                         Py_INCREF(kwargs);
                         PyObject *result = PyObject_Call(read_callback, args, kwargs);
                         if(result == NULL) {
                             // error
+                            return 0;
                         } else {
                             char *py_char = PyBytes_AsString(result);
                             int py_char_len = strlen(py_char);
                             *read_number = py_char_len;
                             memcpy(buf, py_char, py_char_len);
-                            printf("read from python: %s\n", py_char);
+                            // printf("read from python: %s\n", py_char);
                             Py_DECREF(result);
                         }
                         Py_DECREF(kwargs);    
                     }
                     Py_DECREF(args);
-                 }
-           }
+                }
+                return *read_number;
+            }
         %}
 
         
@@ -418,25 +421,34 @@ class BisonGenerator(BisonEvnCheckerMixin, CodeGeneratorMixin, CommandGeneratorB
             ...
         ) {
             py_pipeline = _pipeline;
+            PyObject *done_callback = PyObject_GetAttrString(py_pipeline, "done");
             bison_proc_cb = PyObject_GetAttrString(py_pipeline, "bison_proc");
             token_proc_cb = PyObject_GetAttrString(py_pipeline, "token_proc");
             read_callback = PyObject_GetAttrString(py_pipeline, "read_context");
             Py_INCREF(bison_proc_cb);
             Py_INCREF(token_proc_cb);
             Py_INCREF(read_callback);
+            Py_INCREF(done_callback);
             print_py_obj(bison_proc_cb);
             print_py_obj(token_proc_cb);
             print_py_obj(read_callback);
             yyparse();
-            printf("yyparse done !!\n");
+            
+                PyObject *args = PyTuple_New(0);
+                PyObject *kwargs = PyDict_New();
+                Py_INCREF(args); Py_INCREF(kwargs);
+                PyObject_Call(done_callback, args, kwargs);
+                Py_DECREF(args); Py_DECREF(kwargs);
+                
             Py_DECREF(bison_proc_cb);
             Py_DECREF(token_proc_cb);
             Py_DECREF(read_callback);
+            Py_DECREF(done_callback);
             return 0;
         }
         
         void yyerror(char *s) {
-            fprintf(stderr, "error: %s\n", s);
+            fprintf(stderr, "error!!!!!: %s\n", s);
         }
         """))
         return template.substitute(
