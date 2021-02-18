@@ -117,6 +117,7 @@ class FlexGenerator(
         %{    
             #include "$header_name"
             int yywrap() { return(1); }
+            int lineno =0;
         %}
         
         $ext_config
