@@ -1135,8 +1135,7 @@ source_file_def:
         ;
 
 opt_channel:
-          /*empty */
-          { $$ = {}; }
+          { $$ ; }
         | FOR_SYM CHANNEL_SYM TEXT_STRING_sys_nonewline
                               {##}
         ;
@@ -1227,75 +1226,22 @@ create:
         | CREATE LOGFILE_SYM GROUP_SYM ident ADD lg_undofile
           opt_logfile_group_options
           {
-            auto pc= NEW_PTN Alter_tablespace_parse_context{YYTHD};
-            if (pc == NULL)
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
 
-            if ($7 != NULL)
-            {
-              if (YYTHD->is_error() || contextualize_array(pc, $7))
-                MYSQL_YYABORT; /* purecov: inspected */
-            }
-
-            Lex->m_sql_cmd= NEW_PTN Sql_cmd_logfile_group{CREATE_LOGFILE_GROUP,
-                                                          $4, pc, $6};
-            if (!Lex->m_sql_cmd)
-              MYSQL_YYABORT; /* purecov: inspected */ //OOM
-
-            Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
           }
         | CREATE TABLESPACE_SYM ident opt_ts_datafile_name
           opt_logfile_group_name opt_tablespace_options
           {
-            auto pc= NEW_PTN Alter_tablespace_parse_context{YYTHD};
-            if (pc == NULL)
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
 
-            if ($6 != NULL)
-            {
-              if (YYTHD->is_error() || contextualize_array(pc, $6))
-                MYSQL_YYABORT;
-            }
-
-            auto cmd= NEW_PTN Sql_cmd_create_tablespace{$3, $4, $5, pc};
-            if (!cmd)
-              MYSQL_YYABORT; /* purecov: inspected */ //OOM
-            Lex->m_sql_cmd= cmd;
-            Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
           }
         | CREATE UNDO_SYM TABLESPACE_SYM ident ADD ts_datafile
           opt_undo_tablespace_options
           {
-            auto pc= NEW_PTN Alter_tablespace_parse_context{YYTHD};
-            if (pc == NULL)
-              MYSQL_YYABORT; // OOM
 
-            if ($7 != NULL)
-            {
-              if (YYTHD->is_error() || contextualize_array(pc, $7))
-                MYSQL_YYABORT;
-            }
-
-            auto cmd= NEW_PTN Sql_cmd_create_undo_tablespace{
-              CREATE_UNDO_TABLESPACE, $4, $6, pc};
-            if (!cmd)
-              MYSQL_YYABORT; //OOM
-            Lex->m_sql_cmd= cmd;
-            Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
           }
         | CREATE SERVER_SYM ident_or_text FOREIGN DATA_SYM WRAPPER_SYM
           ident_or_text OPTIONS_SYM '(' server_options_list ')'
           {
-            Lex->sql_command= SQLCOM_CREATE_SERVER;
-            if ($3.length == 0)
-            {
-              my_error(ER_WRONG_VALUE, MYF(0), "server name", "");
-              MYSQL_YYABORT;
-            }
-            Lex->server_options.m_server_name= $3;
-            Lex->server_options.set_scheme($7);
-            Lex->m_sql_cmd=
-              NEW_PTN Sql_cmd_create_server(&Lex->server_options);
+
           }
         ;
 
@@ -3656,7 +3602,7 @@ trg_event:
 */
 
 opt_ts_datafile_name:
-    /* empty */ { $$= { nullptr, 0}; }
+    /* empty */ { $$; }
     | ADD ts_datafile
       {
         $$ = $2;
@@ -3664,7 +3610,7 @@ opt_ts_datafile_name:
     ;
 
 opt_logfile_group_name:
-          /* empty */ { $$= { nullptr, 0}; }
+          /* empty */ { $$; }
         | USE_SYM LOGFILE_SYM GROUP_SYM ident
           {
             $$= $4;
@@ -5643,7 +5589,7 @@ fulltext_index_option:
           common_index_option
         | WITH PARSER_SYM IDENT_sys
           {
-            LEX_CSTRING plugin_name= {$3.str, $3.length};
+            LEX_CSTRING plugin_name;
             if (!plugin_is_ready(plugin_name, MYSQL_FTPARSER_PLUGIN))
             {
               my_error(ER_FUNCTION_NOT_DEFINED, MYF(0), $3.str);
@@ -5742,7 +5688,7 @@ common_index_option:
   type? For this reason we accept the TYPE syntax only if a name is supplied.
 */
 opt_index_name_and_type:
-          opt_ident                  { $$= {$1, NULL}; }
+          opt_ident                  { $$; }
         | opt_ident USING index_type                     {##}; }
         | ident TYPE_SYM index_type                      {##}; }
         ;
@@ -8608,7 +8554,7 @@ opt_returning_type:
           // is chosen so that the returned values are not handled as BLOBs
           // internally. See CONVERT_IF_BIGGER_TO_BLOB.)
           {
-            $$= {ITEM_CAST_CHAR, nullptr, "512", nullptr};
+            $$;
           }
         | RETURNING_SYM cast_type
           {
@@ -9870,18 +9816,18 @@ jt_column_type:
 opt_on_empty_or_error:
           /* empty */
           {
-            $$.empty = {Json_on_response_type::IMPLICIT, nullptr};
-            $$.error = {Json_on_response_type::IMPLICIT, nullptr};
+            $$.empty ;
+            $$.error ;
           }
         | on_empty
           {
             $$.empty = $1;
-            $$.error = {Json_on_response_type::IMPLICIT, nullptr};
+            $$.error ;
           }
         | on_error
           {
             $$.error = $1;
-            $$.empty = {Json_on_response_type::IMPLICIT, nullptr};
+            $$.empty ;
           }
         | on_empty on_error
           {
@@ -9912,15 +9858,15 @@ on_error:
 json_on_response:
           ERROR_SYM
           {
-            $$ = {Json_on_response_type::ERROR, nullptr};
+            $$ ;
           }
         | NULL_SYM
           {
-            $$ = {Json_on_response_type::NULL_VALUE, nullptr};
+            $$ ;
           }
         | DEFAULT_SYM signed_literal
           {
-            $$ = {Json_on_response_type::DEFAULT, $2};
+            $$ ;
           }
         ;
 
@@ -11676,7 +11622,7 @@ binlog_from:
         ;
 
 opt_wild_or_where:
-          /* empty */                   { $$ = {}; }
+          /* empty */                   { $$ ; }
         | LIKE TEXT_STRING_literal                          {##} }; }
         | where_clause                                      {##}, $1 }; }
         ;
@@ -12216,7 +12162,7 @@ field_or_var:
         ;
 
 opt_load_data_set_spec:
-          /* empty */                { $$= {nullptr, nullptr, nullptr}; }
+          /* empty */                { $$; }
         | SET_SYM load_data_set_list                     {##}
         ;
 
@@ -15008,7 +14954,7 @@ trigger_follows_precedes_clause:
             trigger_action_order ident_or_text
             {
               $$.ordering_clause= $1;
-              $$.anchor_trigger_name= { $2.str, $2.length };
+              $$.anchor_trigger_name;
             }
           ;
 

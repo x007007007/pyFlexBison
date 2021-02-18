@@ -17,7 +17,9 @@ class BisonParserGenerator(BisonGenerator):
             |  exprs '|' expr      {#exprs_append_expr#}
             ;
             
-        expr: tokens    {#token_2_expr#}
+        expr:           {#token_zero#}
+            | c_freg    {#token_zero_with_c#}
+            | tokens    {#token_2_expr#}
             | tokens c_freg  {#token_with_c_parse#}
             ;
     
@@ -53,8 +55,13 @@ class BisonParserGenerator(BisonGenerator):
 
     @rule.register(args_list=["$1", "$3"])
     def exprs_append_expr(self, a1, a3):
-        print(f'expr_to_exprs: {a1}, {a3}')
+        print(f'exprs_append_expr: {a1}, {a3}')
         return a1 + [a3]
+
+    @rule.register(argc=0)
+    def token_zero(self, *args, **kwargs):
+        print('token_zero')
+        return ['']
 
     @rule.register(argc=1)
     def token_one(self, a1):
@@ -78,6 +85,11 @@ class BisonParserGenerator(BisonGenerator):
         print(f'token_with_c_parse: {tokens}, {c_token}')
         res = tokens + ['{##}']
         return res
+
+    @rule.register(argc=1)
+    def token_zero_with_c(self, c_token):
+        print(f'token_with_c_parse: {c_token}')
+        return ['{##}']
 
     @rule.register(args_list=["$2"])
     def c_freg(self, c_freg):
